@@ -1,4 +1,5 @@
-import com.example.android_hit.data.remote.ApiService
+package com.example.android_hit.api
+
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
