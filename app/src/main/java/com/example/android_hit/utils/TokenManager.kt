@@ -29,6 +29,30 @@ class TokenManager( context: Context) {
         return sharedPref.getBoolean(key,false)
     }
 
+    fun putNIM(key: String, value:String){
+        editor.putString(key, value).apply()
+    }
+
+    fun getNIM(key: String):String?{
+        return sharedPref.getString(key,null)
+    }
+
+    fun putIAT(key: String, value: Int){
+        editor.putInt(key, value).apply()
+    }
+
+    fun getIAT(key: String):Int{
+        return  sharedPref.getInt(key,0)
+    }
+
+    fun putEXP(key: String, value: Int){
+        editor.putInt(key, value).apply()
+    }
+
+    fun getEXP(key: String):Int{
+        return sharedPref.getInt(key,0)
+    }
+
     fun deleteToken(){
         editor.clear().apply()
     }
