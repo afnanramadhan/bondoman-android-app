@@ -26,6 +26,7 @@ class LoginActivity : AppCompatActivity() {
         initComponent()
         sharedPref = TokenManager(this)
 
+
         val isLogin = sharedPref.isLogin("IS_LOGIN")
         if(isLogin){
             goToHome()
