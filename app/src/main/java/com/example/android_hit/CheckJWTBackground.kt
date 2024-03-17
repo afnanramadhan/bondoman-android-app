@@ -4,9 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
-import com.example.android_hit.api.RetrofitClient
-import com.example.android_hit.data.TokenResponse
 import com.example.android_hit.utils.TokenManager
 import retrofit2.Call
 import retrofit2.Callback

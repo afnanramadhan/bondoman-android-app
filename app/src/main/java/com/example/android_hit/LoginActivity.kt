@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import com.example.android_hit.databinding.ActivityMainBinding
 import com.example.android_hit.utils.TokenManager
 
 class LoginActivity : AppCompatActivity() {
