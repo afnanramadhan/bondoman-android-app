@@ -23,9 +23,10 @@
             android:src="@drawable/baseline_settings_24" />
 
         <TextView
+            android:id="@+id/emailTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="aaaa@gmail.com"
+            android:text="123@gmail.com"
             android:textColor="@color/primary1"
             android:textAlignment="center"/>
 

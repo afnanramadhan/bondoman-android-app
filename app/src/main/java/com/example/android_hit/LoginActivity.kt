@@ -24,13 +24,16 @@ class LoginActivity : AppCompatActivity() {
         sharedPref = TokenManager(this)
 
 
+        //Cek kalo user dah login
         val isLogin = sharedPref.isLogin("IS_LOGIN")
         if(isLogin){
+            //nyalain lagi background service trus dilempar ke page home
+            val serviceIntent = Intent(this, CheckJWTBackground::class.java)
+            this.startService(serviceIntent)
             goToHome()
         }
 
         toLoginPageButton.setOnClickListener {
-
                 it.visibility = View.GONE
                 fragmentManager = supportFragmentManager
                 fragmentManager.beginTransaction().replace(R.id.loginActivity, LoginFragment()).commit()

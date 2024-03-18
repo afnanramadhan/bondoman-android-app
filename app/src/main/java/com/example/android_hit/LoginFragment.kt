@@ -16,7 +16,9 @@ import com.example.android_hit.api.RetrofitClient
 import com.example.android_hit.data.LoginPayload
 import com.example.android_hit.data.LoginResponse
 import com.example.android_hit.data.TokenResponse
+import com.example.android_hit.utils.CryptoManager
 import com.example.android_hit.utils.TokenManager
+import com.example.android_hit.utils.UserManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +31,7 @@ class LoginFragment : Fragment() {
     private lateinit var loginButton : Button
 
     private lateinit var sharedPref : TokenManager
+    private lateinit var userPref : UserManager
 
 
     override fun onCreateView(
@@ -43,6 +46,8 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sharedPref = this.context?.let { TokenManager(it) }!!
+        userPref = this.context?.let {UserManager(it)}!!
+        val cryptoManager = CryptoManager()
         emailInput = view.findViewById(R.id.emailInputField)
         passwordInput = view.findViewById(R.id.passwordInputField)
         loginButton = view.findViewById(R.id.loginButton)
@@ -53,10 +58,11 @@ class LoginFragment : Fragment() {
         }
 
         loginButton.setOnClickListener {
-            Log.i("TES",emailInput.text.toString())
-            Log.i("TES",passwordInput.text.toString())
             val emailValue = emailInput.text.toString()
             val passwordValue = passwordInput.text.toString()
+            val passEncrypt = cryptoManager.encrypt(passwordValue)
+            userPref.putEmail("EMAIL", emailValue)
+            userPref.putPassword("PASS", passEncrypt)
             val data = LoginPayload(emailValue,passwordValue)
             login(data)
 
@@ -89,7 +95,7 @@ class LoginFragment : Fragment() {
 
                 } else {
                     Log.e("POST Error", "Failed to make POST request: ${response.message()}")
-                    Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Login Failed: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
