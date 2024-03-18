@@ -12,14 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AndroidHIT"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".BondoManSplashScreen"-->
-<!--            android:exported="false" />-->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".BondoManSplashScreen"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
