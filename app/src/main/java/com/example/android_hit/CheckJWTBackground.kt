@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.example.android_hit.utils.TokenManager
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.Response
 import kotlin.concurrent.thread
 
