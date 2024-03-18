@@ -11,7 +11,6 @@ import kotlin.concurrent.thread
 class CheckJWTBackground:Service() {
     private lateinit var sharedPref : TokenManager
     override fun onBind(intent: Intent?): IBinder? {
-        // Return null because you don't need to bind to the service
         return null
     }
 
@@ -35,25 +34,19 @@ class CheckJWTBackground:Service() {
                     }
 
                 } catch (e: InterruptedException) {
-                    // Handle interruption
                     return@thread
                 }
             }
         }
-
-        // Perform your background tasks here
-        // This method is called when the service is started
-        return START_STICKY  // This makes the service restart if it's killed by the system
+        return START_STICKY
     }
 
     override fun onDestroy() {
-        // Clean up resources if needed
         super.onDestroy()
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        // Stop the service when the app is removed from the recent apps list
         stopSelf()
     }
 }

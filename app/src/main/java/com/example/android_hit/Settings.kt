@@ -1,6 +1,8 @@
 package com.example.android_hit
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -48,11 +50,30 @@ class Settings : Fragment() {
         Log.e("SET","masuk sini")
 
         logoutButton.setOnClickListener {
-            Log.e("SET","masuk sini 2")
-            sharedPref.deleteToken()
-            goToStart()
+            showConfirmationDialog()
+
         }
         return view
+    }
+    private fun showConfirmationDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(this.context)
+        alertDialogBuilder.apply {
+            setTitle("Confirmation")
+            setMessage("Are you sure you want to logout?")
+            setPositiveButton("Yes") { dialogInterface: DialogInterface, _: Int ->
+                Log.e("SET","masuk sini 2")
+                sharedPref.deleteToken()
+                goToStart()
+                dialogInterface.dismiss()
+            }
+            setNegativeButton("No") { dialogInterface: DialogInterface, _: Int ->
+                dialogInterface.dismiss()
+            }
+            setCancelable(false)
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 
     private fun goToStart(){
