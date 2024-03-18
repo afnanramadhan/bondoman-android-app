@@ -1,6 +1,7 @@
 package com.example.android_hit
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -34,7 +35,6 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
@@ -58,30 +58,8 @@ class LoginFragment : Fragment() {
             val emailValue = emailInput.text.toString()
             val passwordValue = passwordInput.text.toString()
             val data = LoginPayload(emailValue,passwordValue)
-            Login(data)
+            login(data)
 
-//            val myToken = sharedPref.getToken("TOKEN")!!
-//            Log.i("TOKEN", myToken)
-//            RetrofitClient.apiService.cekToken(token = "Bearer $myToken").enqueue(object : Callback<TokenResponse> {
-//                override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
-//                    if (response.isSuccessful) {
-//                        // Handle successful response
-//                        val responseData = response.body()
-//                        Log.i("TOKEN1", responseData?.iat.toString())
-//                        Log.i("TOKEN1", responseData?.nim.toString())
-//                        Log.i("TOKEN1", responseData?.exp.toString())
-//                    } else {
-//                        // Handle unsuccessful response
-//                        // You can parse the error body using response.errorBody().string()
-//                        response.errorBody()?.let { it1 -> Log.i("TOKEN1", it1.string()) }
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<TokenResponse>, t: Throwable) {
-//                    // Handle failure
-//                    // This method is called when the HTTP call fails
-//                }
-//            })
         }
     }
 
@@ -90,7 +68,9 @@ class LoginFragment : Fragment() {
         startActivity(intent)
     }
 
-    private fun Login(data:LoginPayload){
+
+    //tembak api login
+    private fun login(data:LoginPayload){
         RetrofitClient.apiService.login(data).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
@@ -102,6 +82,8 @@ class LoginFragment : Fragment() {
                     sharedPref.getToken("TOKEN")?.let { it1 -> Log.i("LOGIN", it1) }
                     Log.i("LOGIN", sharedPref.isLogin("IS_LOGIN").toString())
                     checkToken(responseBody.token)
+                    val serviceIntent = Intent(context, CheckJWTBackground::class.java)
+                    context?.startService(serviceIntent)
                     goToHome()
 
 
@@ -116,6 +98,7 @@ class LoginFragment : Fragment() {
         })
     }
 
+    //tembak api auth/token
     private fun checkToken(token: String){
         RetrofitClient.apiService.cekToken(token = "Bearer $token").enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
@@ -133,8 +116,6 @@ class LoginFragment : Fragment() {
 
 
                 } else {
-                    // Handle unsuccessful response
-                    // You can parse the error body using response.errorBody().string()
                     response.errorBody()?.let { it1 -> Log.i("TOKEN1", it1.string()) }
                 }
             }
