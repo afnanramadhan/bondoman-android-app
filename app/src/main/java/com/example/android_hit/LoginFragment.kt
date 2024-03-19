@@ -81,12 +81,10 @@ class LoginFragment : Fragment() {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
                     val responseBody = response.body()
-                    Log.d("POST Response", responseBody?.token ?: "")
                     sharedPref.putToken("TOKEN", responseBody!!.token)
                     sharedPref.putIsLogin("IS_LOGIN",true)
                     Toast.makeText(context, "Login Success", Toast.LENGTH_SHORT).show()
-                    sharedPref.getToken("TOKEN")?.let { it1 -> Log.i("LOGIN", it1) }
-                    Log.i("LOGIN", sharedPref.isLogin("IS_LOGIN").toString())
+
                     checkToken(responseBody.token)
                     val serviceIntent = Intent(context, CheckJWTBackground::class.java)
                     context?.startService(serviceIntent)
@@ -94,8 +92,9 @@ class LoginFragment : Fragment() {
 
 
                 } else {
-                    Log.e("POST Error", "Failed to make POST request: ${response.message()}")
-                    Toast.makeText(context, "Login Failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    val errMes = response.errorBody()?.string()
+                    Log.e("POST Error", "Failed to make POST request: $errMes")
+                    Toast.makeText(context, "Login Failed: $errMes", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
