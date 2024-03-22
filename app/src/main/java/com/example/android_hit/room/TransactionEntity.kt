@@ -10,4 +10,6 @@ class TransactionEntity (
     @ColumnInfo(name = "judul") val judul : String,
     @ColumnInfo(name = "nominal") val nominal : Int,
     @ColumnInfo(name = "kategori") val kategori : String,
+    @ColumnInfo(name = "tanggal") val tanggal : String,
+    @ColumnInfo(name = "lokasi") val lokasi : String,
 )
