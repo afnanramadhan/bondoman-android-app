@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "transaction_table")
 class TransactionEntity (
     @PrimaryKey(autoGenerate = true) var id: Int? = null,
-    @ColumnInfo(name = "judul") val judul : String,
-    @ColumnInfo(name = "nominal") val nominal : Int,
-    @ColumnInfo(name = "kategori") val kategori : String,
-    @ColumnInfo(name = "tanggal") val tanggal : String,
-    @ColumnInfo(name = "lokasi") val lokasi : String,
+    @ColumnInfo(name = "title") val title : String,
+    @ColumnInfo(name = "amount") val amount : Int,
+    @ColumnInfo(name = "category") val category : String,
+    @ColumnInfo(name = "location") val location : String,
+    @ColumnInfo(name = "date") val date : String
 )

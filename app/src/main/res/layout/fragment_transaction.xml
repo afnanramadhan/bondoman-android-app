@@ -1,103 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Transaction">
 
-    <!-- FrameLayout untuk konten utama -->
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- LinearLayout untuk kolom -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginVertical="8dp">
+            android:orientation="vertical">
 
-            <!-- Kolom biru -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/primary_color_2"
-                android:padding="16dp"
-                android:orientation="vertical"
-                android:layout_marginRight="8dp">
+            <!-- Isi konten Anda di sini -->
 
-                <!-- Teks pertama di dalam kolom biru -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Income"
-                    android:textColor="@color/primary_color_1"
-                    android:textStyle="normal"
-                    android:textSize="16dp"
-                    />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_transaction"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </androidx.recyclerview.widget.RecyclerView>
 
-                <!-- Teks kedua di dalam kolom biru -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Rp100.000"
-                    android:textColor="@color/primary_color_1"
-                    android:textStyle="bold"
-                    android:textSize="20dp"
-                    />
-
-            </LinearLayout>
-
-            <!-- Kolom kuning -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/primary_color_3"
-                android:padding="16dp"
-                android:orientation="vertical"
-                android:layout_marginLeft="8dp">
-
-                <!-- Teks pertama di dalam kolom kuning -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Expenses"
-                    android:textColor="@color/primary_color_1"
-                    android:textStyle="normal"
-                    android:textSize="16dp"
-                    />
-
-                <!-- Teks kedua di dalam kolom kuning -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Rp100.000"
-                    android:textColor="@color/primary_color_1"
-                    android:textStyle="bold"
-                    android:textSize="20dp"
-                    />
-
-            </LinearLayout>
         </LinearLayout>
 
-        <!-- RelativeLayout untuk gambar -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/iv_transaction"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_centerInParent="true"
-                android:src="@drawable/baseline_assignment_24" />
-        </RelativeLayout>
-    </FrameLayout>
+    </ScrollView>
 
     <!-- Tombol Add -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -106,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@drawable/baseline_add_circle_24"
-        app:layout_anchor="@id/content_frame"
-        app:layout_anchorGravity="bottom|end" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"/>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

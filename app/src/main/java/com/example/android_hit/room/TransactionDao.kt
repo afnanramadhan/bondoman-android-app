@@ -9,17 +9,17 @@ interface TransactionDao {
     @Query("SELECT * FROM transaction_table")
     fun getAllTransaction() : List<TransactionEntity>
 
-    @Query("SELECT SUM(nominal) FROM transaction_table WHERE kategori = 'income'")
+    @Query("SELECT SUM(amount) FROM transaction_table WHERE category = 'income'")
     fun getTotalIncome() : List<Int>
 
-    @Query("SELECT SUM(nominal) FROM transaction_table WHERE kategori = 'expense'")
+    @Query("SELECT SUM(amount) FROM transaction_table WHERE category = 'expense'")
     fun getTotalExpense() : List<Int>
 
-    @Query("SELECT * FROM transaction_table WHERE judul = :judul")
-    fun getByJudul(judul: String): TransactionEntity
+    @Query("SELECT * FROM transaction_table WHERE title = :title")
+    fun getByJudul(title: String): TransactionEntity
 
     @Insert
-    fun addTransaction(transactionEntity: TransactionEntity)
+    fun addTransaction(vararg transactionEntity: TransactionEntity)
 
     @Update
     fun updateTransaction(transactionEntity: TransactionEntity)

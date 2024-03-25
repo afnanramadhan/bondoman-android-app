@@ -1,10 +1,19 @@
 package com.example.android_hit
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.android_hit.adapter.TransactionAdapter
+import com.example.android_hit.databinding.ActivityMainBinding
+import com.example.android_hit.room.TransactionDB
+import com.example.android_hit.room.TransactionEntity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,15 +27,16 @@ private const val ARG_PARAM2 = "param2"
  */
 class Transaction : Fragment() {
     // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: TransactionAdapter
+    private lateinit var database: TransactionDB
+    private lateinit var fab: FloatingActionButton
+    private var list = mutableListOf<TransactionEntity>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+        binding = ActivityMainBinding.inflate(layoutInflater)
     }
 
     override fun onCreateView(
@@ -35,6 +45,28 @@ class Transaction : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_transaction, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        recyclerView = view.findViewById(R.id.rv_transaction)
+        fab = view.findViewById(R.id.fab_add)
+        database = TransactionDB.getInstance(requireContext())
+        adapter = TransactionAdapter(list)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+        recyclerView.adapter = adapter
+        getData()
+        fab.setOnClickListener {
+            startActivity(Intent(requireContext(), AddTransactionActivity::class.java))
+        }
+
+    }
+
+    fun getData() {
+        list.clear()
+        list.addAll(database.transactionDao.getAllTransaction())
+        adapter.notifyDataSetChanged()
     }
 
     companion object {

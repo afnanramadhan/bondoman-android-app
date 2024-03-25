@@ -16,7 +16,7 @@ abstract class TransactionDB : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: TransactionDB? = null
-        fun getDatabase(context: Context): TransactionDB {
+        fun getInstance(context: Context): TransactionDB {
             synchronized(this) {
                 var instance = INSTANCE
 
