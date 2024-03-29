@@ -6,17 +6,17 @@ import androidx.room.*
 @Dao
 interface TransactionDao {
 
-    @Query("SELECT * FROM transaction_table")
+    @Query("SELECT * FROM transaction_table ORDER BY id DESC")
     fun getAllTransaction() : List<TransactionEntity>
 
-    @Query("SELECT SUM(amount) FROM transaction_table WHERE category = 'income'")
-    fun getTotalIncome() : List<Int>
+    @Query("SELECT SUM(amount) FROM transaction_table WHERE category = 'Income'")
+    fun getTotalIncome() : Int
 
-    @Query("SELECT SUM(amount) FROM transaction_table WHERE category = 'expense'")
-    fun getTotalExpense() : List<Int>
+    @Query("SELECT SUM(amount) FROM transaction_table WHERE category = 'Expense'")
+    fun getTotalExpense() : Int
 
-    @Query("SELECT * FROM transaction_table WHERE title = :title")
-    fun getByJudul(title: String): TransactionEntity
+    @Query("SELECT * FROM transaction_table WHERE id = :id")
+    fun getId(id: Int) : TransactionEntity
 
     @Insert
     fun addTransaction(vararg transactionEntity: TransactionEntity)

@@ -7,7 +7,8 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [TransactionEntity::class],
-    version = 1
+    version = 5,
+    exportSchema = false
 )
 abstract class TransactionDB : RoomDatabase() {
 
@@ -16,22 +17,19 @@ abstract class TransactionDB : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: TransactionDB? = null
-        fun getInstance(context: Context): TransactionDB {
-            synchronized(this) {
-                var instance = INSTANCE
 
-                if (instance == null) {
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        TransactionDB::class.java,
-                        "transaction_database"
-                    )
+        fun getInstance(context: Context): TransactionDB {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    TransactionDB::class.java,
+                    "transaction_database"
+                )
                     .fallbackToDestructiveMigration()
                     .allowMainThreadQueries()
                     .build()
-                    INSTANCE = instance
-                }
-                return instance
+                INSTANCE = instance
+                instance
             }
         }
     }

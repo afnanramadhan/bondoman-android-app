@@ -6,35 +6,148 @@
     android:layout_height="match_parent"
     tools:context=".Transaction">
 
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/expense_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="16dp">
 
+        <!-- LinearLayout untuk kolom -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal">
 
-            <!-- Isi konten Anda di sini -->
+            <!-- Kolom biru -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_income"
+                android:padding="16dp"
+                android:orientation="horizontal"
+                android:layout_marginRight="8dp">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/income"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="12dp"
+                    />
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Income"
+                        android:textColor="@color/primary_color_1"
+                        android:textStyle="normal"
+                        android:textSize="16dp"
+                        />
+
+                    <!-- Teks kedua di dalam kolom biru -->
+                    <TextView
+                        android:id="@+id/amount_income"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primary_color_1"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Kolom kuning -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_expense"
+                android:padding="16dp"
+                android:orientation="horizontal"
+                android:layout_marginRight="8dp">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/expense"
+                    android:scaleType="fitCenter"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="12dp"
+                    />
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Expense"
+                        android:textColor="@color/primary_color_1"
+                        android:textStyle="normal"
+                        android:textSize="16dp"
+                        />
+
+                    <!-- Teks kedua di dalam kolom biru -->
+                    <TextView
+                        android:id="@+id/amount_expense"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/primary_color_1"
+                        android:textStyle="bold"
+                        android:textSize="16dp"
+                        />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recently Transaction"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/primary_color_1"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_transaction"
+                android:id="@+id/rvTransaction"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:paddingBottom="48dp">
             </androidx.recyclerview.widget.RecyclerView>
 
-        </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 
-    </ScrollView>
 
     <!-- Tombol Add -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add"
+        android:id="@+id/fabAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@drawable/baseline_add_circle_24"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"/>
+        android:layout_alignParentEnd="true"
+        app:srcCompat="@drawable/baseline_add_circle_24"
+        app:backgroundTint="@android:color/transparent"
+        app:fabSize="auto"
+        app:maxImageSize="60dp"
+        app:elevation="0dp"/>
 
 </RelativeLayout>
