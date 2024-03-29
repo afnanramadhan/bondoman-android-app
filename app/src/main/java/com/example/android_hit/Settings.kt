@@ -1,10 +1,19 @@
 package com.example.android_hit
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import com.example.android_hit.utils.TokenManager
+import com.example.android_hit.utils.UserManager
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +29,10 @@ class Settings : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var sharedPref : TokenManager
+    private lateinit var logoutButton : Button
+    private lateinit var emailTextView : TextView
+    private lateinit var user: UserManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,31 +42,51 @@ class Settings : Fragment() {
         }
     }
 
+    @SuppressLint("UseRequireInsteadOfGet", "MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_settings, container, false)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+        sharedPref = this.context?.let { TokenManager(it) }!!
+        user = this.context?.let { UserManager(it) }!!
+        logoutButton = view.findViewById(R.id.logoutButton)
+        emailTextView = view.findViewById(R.id.emailTextView)
+
+        emailTextView.text = user.getEmail("EMAIL")
+        Log.e("SET","masuk sini")
+
+        logoutButton.setOnClickListener {
+            showConfirmationDialog()
+
+        }
+        return view
+    }
+    private fun showConfirmationDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(this.context)
+        alertDialogBuilder.apply {
+            setTitle("Confirmation")
+            setMessage("Are you sure you want to logout?")
+            setPositiveButton("Yes") { dialogInterface: DialogInterface, _: Int ->
+                Log.e("SET","masuk sini 2")
+                sharedPref.deleteToken()
+                goToStart()
+                dialogInterface.dismiss()
+            }
+            setNegativeButton("No") { dialogInterface: DialogInterface, _: Int ->
+                dialogInterface.dismiss()
+            }
+            setCancelable(false)
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Settings.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Settings().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun goToStart(){
+        val intent = Intent(activity, LoginActivity::class.java)
+        startActivity(intent)
     }
+
 }
