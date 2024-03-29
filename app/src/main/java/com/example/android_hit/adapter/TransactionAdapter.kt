@@ -3,14 +3,10 @@ package com.example.android_hit.adapter
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android_hit.AddTransactionActivity
-import com.example.android_hit.R
+import com.example.android_hit.DetailTransactionActivity
 import com.example.android_hit.databinding.RowTransactionBinding
 import com.example.android_hit.room.TransactionEntity
 
@@ -23,7 +19,7 @@ class TransactionAdapter(private val list: MutableList<TransactionEntity>) : Rec
                 amount.text = transaction.amount.toString()
                 category.text = transaction.category
                 location.text = transaction.location
-                date.text = transaction.timestamp.toString()
+                date.text = transaction.timestamp
 
                 deleteButton.setOnClickListener {
                     val position = adapterPosition
@@ -31,8 +27,7 @@ class TransactionAdapter(private val list: MutableList<TransactionEntity>) : Rec
                 }
 
                 editButton.setOnClickListener {
-                    val position = adapterPosition
-                    val intent = Intent(binding.root.context, AddTransactionActivity::class.java)
+                    val intent = Intent(binding.root.context, DetailTransactionActivity::class.java)
                     intent.putExtra("id", transaction.id)
                     binding.root.context.startActivity(intent)
                 }
@@ -41,11 +36,7 @@ class TransactionAdapter(private val list: MutableList<TransactionEntity>) : Rec
                     val locationUri = "geo:0,0?q=${transaction.location}"
                     val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(locationUri))
                     mapIntent.setPackage("com.google.android.apps.maps")
-                    if (mapIntent.resolveActivity(binding.root.context.packageManager) != null) {
-                        binding.root.context.startActivity(mapIntent)
-                    } else {
-                        Toast.makeText(binding.root.context, "Google Maps app not found", Toast.LENGTH_SHORT).show()
-                    }
+                    startActivity(binding.root.context, mapIntent, null)
                 }
             }
         }

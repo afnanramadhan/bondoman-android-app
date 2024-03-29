@@ -2,35 +2,37 @@ package com.example.android_hit
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.RadioButton
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.android_hit.adapter.TransactionAdapter
-import com.example.android_hit.databinding.ActivityAddTransactionBinding
+import com.example.android_hit.databinding.FragmentDetailTransactionBinding
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class AddTransactionActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityAddTransactionBinding
+class DetailTransaction : Fragment() {
+    private var _binding: FragmentDetailTransactionBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var database: TransactionDB
-    private lateinit var category: String
+    private var category: String = ""
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentDetailTransactionBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityAddTransactionBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-//        replaceFragment(HeaderDetailTransaction())
-
-        database = TransactionDB.getInstance(applicationContext)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        database = TransactionDB.getInstance(requireContext())
 
         binding.radioExpense.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -44,10 +46,13 @@ class AddTransactionActivity : AppCompatActivity() {
             }
         }
 
-        var intent = intent.extras
+        val intent = requireActivity().intent.extras
         if (intent != null) {
             val id = intent.getInt("id", 0)
-            var transaction = database.transactionDao.getId(id)
+            val transaction = database.transactionDao.getId(id)
+
+            binding.radioExpense.isEnabled = false
+            binding.radioIncome.isEnabled = false
 
             binding.inputTitle.setText(transaction.title)
             binding.inputAmount.setText(transaction.amount.toString())
@@ -74,6 +79,7 @@ class AddTransactionActivity : AppCompatActivity() {
                         val transaction = database.transactionDao.getId(id)
                         timestamp = transaction?.timestamp
                     }
+
                     if (intent != null) {
                         database.transactionDao.updateTransaction(
                             TransactionEntity(
@@ -85,7 +91,7 @@ class AddTransactionActivity : AppCompatActivity() {
                                 timestamp.toString()
                             )
                         )
-                        setResult(Activity.RESULT_OK)
+                        requireActivity().setResult(Activity.RESULT_OK)
                     } else {
                         val amountValue = amount.toInt()
 
@@ -104,36 +110,42 @@ class AddTransactionActivity : AppCompatActivity() {
                             )
                         )
                     }
-                    finish()
-                } catch (e: NumberFormatException) {
-                    // Handle kesalahan jika nilai amount tidak valid
+
                     Toast.makeText(
-                        applicationContext,
+                        requireContext(),
+                        "Transaction saved",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+
+                } catch (e: NumberFormatException) {
+                    Toast.makeText(
+                        requireContext(),
                         "Invalid amount entered",
                         Toast.LENGTH_SHORT
                     ).show()
                 } catch (ex: Exception) {
-                    // Handle kesalahan lainnya
                     Toast.makeText(
-                        applicationContext,
+                        requireContext(),
                         "Error occurred: ${ex.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             } else {
-                // Menampilkan pesan jika ada field yang kosong
                 Toast.makeText(
-                    applicationContext,
+                    requireContext(),
                     "Please fill all the fields",
                     Toast.LENGTH_SHORT
                 ).show()
             }
         }
     }
-    private fun replaceFragment(header: Fragment) {
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.header_add_transaction, header)
-        fragmentTransaction.commit()
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

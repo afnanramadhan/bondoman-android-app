@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android_hit.adapter.TransactionAdapter
-import com.example.android_hit.databinding.ActivityMainBinding
 import com.example.android_hit.databinding.FragmentTransactionBinding
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
@@ -59,7 +58,7 @@ class Transaction : Fragment() {
         adapter = TransactionAdapter(list)
         recyclerView.adapter = adapter
         fab.setOnClickListener {
-            startActivity(Intent(requireContext(), AddTransactionActivity::class.java))
+            startActivity(Intent(requireContext(), DetailTransactionActivity::class.java))
         }
 
         adapter.setOnDeleteClickListener(object : TransactionAdapter.OnDeleteClickListener {
