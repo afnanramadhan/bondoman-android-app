@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android_hit.adapter.TransactionAdapter
 import com.example.android_hit.databinding.ActivityMainBinding
+import com.example.android_hit.databinding.FragmentTransactionBinding
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -27,48 +28,85 @@ private const val ARG_PARAM2 = "param2"
  */
 class Transaction : Fragment() {
     // TODO: Rename and change types of parameters
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: FragmentTransactionBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TransactionAdapter
     private lateinit var database: TransactionDB
     private lateinit var fab: FloatingActionButton
     private var list = mutableListOf<TransactionEntity>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_transaction, container, false)
+        binding = FragmentTransactionBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recyclerView = view.findViewById(R.id.rv_transaction)
-        fab = view.findViewById(R.id.fab_add)
-        database = TransactionDB.getInstance(requireContext())
-        adapter = TransactionAdapter(list)
+        recyclerView = binding.rvTransaction
+        fab = binding.fabAdd
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+        recyclerView.addItemDecoration(
+            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        )
+        adapter = TransactionAdapter(list)
         recyclerView.adapter = adapter
-        getData()
         fab.setOnClickListener {
             startActivity(Intent(requireContext(), AddTransactionActivity::class.java))
         }
 
+        adapter.setOnDeleteClickListener(object : TransactionAdapter.OnDeleteClickListener {
+            override fun onDeleteClick(position: Int) {
+                deleteTransaction(position)
+            }
+        })
+        database = TransactionDB.getInstance(requireContext())
+        getData()
+        val totalExpenseAmount = database.transactionDao.getTotalExpense()
+        binding.amountExpense.text = totalExpenseAmount.toString()
     }
 
-    fun getData() {
+    private fun deleteTransaction(position: Int) {
+        val deletedItem = list[position]
+        // Kurangi total expense amount jika transaksi yang dihapus memiliki kategori expense
+        if (deletedItem.category == "Expense") {
+            val expenseAmount = deletedItem.amount
+            val currentTotalExpense = database.transactionDao.getTotalExpense()
+            val newTotalExpense = currentTotalExpense - expenseAmount
+            binding.amountExpense.text = newTotalExpense.toString()
+        } else {
+            val incomeAmount = deletedItem.amount
+            val currentTotalIncome = database.transactionDao.getTotalIncome()
+            val newTotalIncome = currentTotalIncome - incomeAmount
+            binding.amountIncome.text = newTotalIncome.toString()
+        }
+        // Hapus transaksi dari database dan daftar transaksi
+        database.transactionDao.deleteTransaction(deletedItem)
+        list.removeAt(position)
+        adapter.notifyItemRemoved(position)
+    }
+
+    private fun getData() {
         list.clear()
         list.addAll(database.transactionDao.getAllTransaction())
         adapter.notifyDataSetChanged()
+        val totalExpenseAmount = database.transactionDao.getTotalExpense()
+        binding.amountExpense.text = totalExpenseAmount.toString()
+        val totalIncomeAmount = database.transactionDao.getTotalIncome()
+        binding.amountIncome.text = totalIncomeAmount.toString()
     }
 
+    override fun onResume() {
+        super.onResume()
+        getData()
+    }
     companion object {
         /**
          * Use this factory method to create a new instance of

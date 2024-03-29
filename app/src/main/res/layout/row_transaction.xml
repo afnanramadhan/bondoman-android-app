@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/border_transaction_layout"
+    android:layout_marginBottom="16dp">
 
     <LinearLayout
         android:id="@+id/transaction_layout"
@@ -18,15 +20,19 @@
             android:orientation="vertical"
             android:layout_marginRight="8dp">
             <TextView
-                android:id="@+id/date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16dp"/>
-            <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"/>
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:gravity="left"
+                android:layout_marginBottom="8dp"/>
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:gravity="left"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
@@ -37,18 +43,60 @@
                 android:id="@+id/amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"/>
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:gravity="right"
+                android:layout_marginBottom="8dp"/>
             <TextView
                 android:id="@+id/category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16dp"/>
+                android:textSize="16dp"
+                android:gravity="right"/>
         </LinearLayout>
     </LinearLayout>
-    <TextView
-        android:id="@+id/location"
+    <LinearLayout
+        android:id="@+id/location_delete_edit_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/outline_location_on_24"
+            android:layout_gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="8dp"
+            android:gravity="end">
+            <ImageButton
+                android:id="@+id/delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/outline_delete_24"
+                android:background="@android:color/transparent"
+                android:layout_marginRight="4dp"/>
+
+            <ImageButton
+                android:id="@+id/edit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/outline_edit_note_24"
+                android:background="@android:color/transparent"
+                android:layout_marginLeft="4dp"/>
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
