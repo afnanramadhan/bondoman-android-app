@@ -1,59 +1,103 @@
 package com.example.android_hit
 
+
+import java.text.NumberFormat
+import java.util.Locale
+import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import com.example.android_hit.adapter.TransactionAdapter
+import com.example.android_hit.databinding.FragmentGraphsBinding
+import com.example.android_hit.room.TransactionDB
+import com.example.android_hit.room.TransactionEntity
+import com.example.android_hit.utils.MyValueFormatter
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.formatter.PercentFormatter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Graphs.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Graphs : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentGraphsBinding
+    private lateinit var pieChart: PieChart
+    private lateinit var adapter: TransactionAdapter
+    private lateinit var database: TransactionDB
+    private var list = mutableListOf<TransactionEntity>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_graphs, container, false)
+        binding = FragmentGraphsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Graphs.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Graphs().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        adapter = TransactionAdapter(list)
+        database = TransactionDB.getInstance(requireContext())
+        getData()
+
+        pieChart = view.findViewById(R.id.pie_chart)
+        val list:ArrayList<PieEntry> = ArrayList()
+
+        val totalExpenseAmount = database.transactionDao.getTotalExpense().toFloat()
+        val totalIncomeAmount = database.transactionDao.getTotalIncome().toFloat()
+        Log.e("PIE", totalIncomeAmount.toString())
+        Log.e("PIE", totalExpenseAmount.toString())
+        val percentageExpense = (totalExpenseAmount/(totalExpenseAmount+totalIncomeAmount))*100
+        val percentageIncome = (totalIncomeAmount/(totalExpenseAmount+totalIncomeAmount))*100
+        Log.e("PIE", percentageExpense.toString())
+        Log.e("PIE", percentageIncome.toString())
+
+        list.add(PieEntry(percentageExpense,"Expense"))
+        list.add(PieEntry(percentageIncome,"Income"))
+
+        val pieDataSet= PieDataSet(list,"")
+        val colors = ArrayList<Int>()
+        colors.add(Color.parseColor("#EFDAC7"))
+        colors.add(Color.parseColor("#B1B8D8"))
+
+
+        pieDataSet.colors = colors
+        pieDataSet.valueTextColor= Color.BLACK
+        pieDataSet.valueTextSize=15f
+        pieDataSet.valueFormatter = MyValueFormatter()
+
+        val pieData= PieData(pieDataSet)
+
+        pieChart.data= pieData
+        pieChart.description.isEnabled = false
+        pieChart.legend.textSize = 18f
+        pieChart.legend.verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
+        pieChart.legend.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        pieChart.legend.orientation = Legend.LegendOrientation.HORIZONTAL
+        pieChart.setDrawEntryLabels(false)
+
+        pieChart.animateY(2000)
     }
+
+    private fun getData() {
+        list.clear()
+        list.addAll(database.transactionDao.getAllTransaction())
+        adapter.notifyDataSetChanged()
+        val totalExpenseAmount = database.transactionDao.getTotalExpense()
+        val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        binding.expenseValueText.text = currencyFormat.format(totalExpenseAmount)
+        val totalIncomeAmount = database.transactionDao.getTotalIncome()
+        binding.incomeValueText.text = currencyFormat.format(totalIncomeAmount)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getData()
+    }
+
 }
