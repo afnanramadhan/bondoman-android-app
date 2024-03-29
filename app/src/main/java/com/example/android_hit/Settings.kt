@@ -71,6 +71,8 @@ class Settings : Fragment() {
             setPositiveButton("Yes") { dialogInterface: DialogInterface, _: Int ->
                 Log.e("SET","masuk sini 2")
                 sharedPref.deleteToken()
+                val serviceIntent = Intent(context, CheckJWTBackground::class.java)
+                context.stopService(serviceIntent)
                 goToStart()
                 dialogInterface.dismiss()
             }

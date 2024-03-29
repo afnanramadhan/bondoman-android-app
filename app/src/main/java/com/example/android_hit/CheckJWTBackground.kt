@@ -12,6 +12,7 @@ import kotlin.concurrent.thread
 class CheckJWTBackground:Service() {
     private lateinit var sharedPref : TokenManager
     private lateinit var handler: Handler
+    private var stop = false
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -23,14 +24,13 @@ class CheckJWTBackground:Service() {
             while (true) {
                 try {
                     Thread.sleep(2000)
-
                     // Perform your task here
                     val exp = sharedPref.getEXP("EXP_TIME")
                     val currentTime = System.currentTimeMillis()/1000
                     Log.d("THREAD", exp.toString())
                     Log.d("THREAD", currentTime.toString())
                     Log.e("THREAD", (exp-currentTime).toString())
-                    if(currentTime>exp){
+                    if(currentTime>exp && !stop){
                         handler.post {
                             showConfirmationBox()
                         }
@@ -38,6 +38,11 @@ class CheckJWTBackground:Service() {
                         stopSelf()
                         return@thread
                     }
+                    if(stop){
+                        return@thread
+                    }
+
+
 
                 } catch (e: InterruptedException) {
                     return@thread
@@ -49,6 +54,8 @@ class CheckJWTBackground:Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stop = true
+        stopSelf()
     }
 
     private fun showConfirmationBox() {
