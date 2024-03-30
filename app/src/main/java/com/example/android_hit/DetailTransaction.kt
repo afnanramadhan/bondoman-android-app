@@ -1,13 +1,18 @@
 package com.example.android_hit
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.android_hit.databinding.FragmentDetailTransactionBinding
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
@@ -21,18 +26,44 @@ class DetailTransaction : Fragment() {
 
     private lateinit var database: TransactionDB
     private var category: String = ""
+    private lateinit var transactionReceiver: TransactionReceiver
+    private val RANDOMIZE_ACTION = "com.example.android_hit.RANDOMIZE_ACTION"
+    companion object {
+        var fragmentCounter = 0
+        var amountInput = ""
+    }
+
+    inner class TransactionReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == RANDOMIZE_ACTION) {
+                // Handle the broadcast message here
+                val data = intent.getStringExtra("hargaRandom")
+                Log.e("BROD", "Received randomize broadcast message $data")
+                if (data != null) {
+                    amountInput = data
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        fragmentCounter++
         _binding = FragmentDetailTransactionBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         database = TransactionDB.getInstance(requireContext())
+
+        transactionReceiver = TransactionReceiver()
+        val filter = IntentFilter(RANDOMIZE_ACTION)
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(transactionReceiver, filter)
+
 
         binding.radioExpense.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -46,6 +77,9 @@ class DetailTransaction : Fragment() {
             }
         }
 
+        if(amountInput!=""){
+            binding.inputAmount.setText(amountInput)
+        }
         val intent = requireActivity().intent.extras
         if (intent != null) {
             val id = intent.getInt("id", 0)
@@ -144,8 +178,15 @@ class DetailTransaction : Fragment() {
         }
     }
 
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        amountInput=""
+        if(fragmentCounter>1){
+            LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(transactionReceiver)
+        }
+
     }
 }
