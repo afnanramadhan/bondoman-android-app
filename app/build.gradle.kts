@@ -62,5 +62,6 @@ dependencies {
     kapt("androidx.room:room-compiler:2.5.0")
     androidTestImplementation ("androidx.room:room-testing:2.5.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 }
