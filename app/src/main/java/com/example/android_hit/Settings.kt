@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,8 +17,10 @@ import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
 import com.example.android_hit.utils.TokenManager
 import com.example.android_hit.utils.UserManager
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import java.io.File
 import java.io.FileOutputStream
 
 // TODO: Rename parameter arguments, choose names that match
@@ -71,22 +74,30 @@ class Settings : Fragment() {
 
         }
         saveButton.setOnClickListener {
-            val filePath = requireContext().getExternalFilesDir(null)?.absolutePath + "/transactions.xlsx"
-            saveTransactionsToExcel(transactions, filePath)
-            Log.e("SET","masuk sini 3")
-            val alertDialogBuilder = AlertDialog.Builder(this.context)
-            alertDialogBuilder.apply {
-                setTitle("Success")
-                setMessage("Transactions have been saved to $filePath")
-                setPositiveButton("OK") { dialogInterface: DialogInterface, _: Int ->
-                    dialogInterface.dismiss()
-                }
-                setCancelable(false)
-            }
+            val fileFormats = arrayOf("xls", "xlsx")
 
-            val alertDialog = alertDialogBuilder.create()
-            alertDialog.show()
+            AlertDialog.Builder(requireContext()).apply {
+                setTitle("Choose file format")
+                setItems(fileFormats) { dialog, which ->
+                    val fileFormat = fileFormats[which]
+                    val documentsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                    val documentsFolder = File(documentsDir, "Bondoman-Transaction")
+                    if (!documentsFolder.exists()) {
+                        documentsFolder.mkdirs()
+                    }
+                    val title = "transactions.$fileFormat"
+                    val file = File(documentsFolder, title)
+                    val fileOutputStream = FileOutputStream(file)
+                    saveTransactionsToExcel(transactions, fileFormat, fileOutputStream)
+                    fileOutputStream.close()
+                }
+                setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+            }.create().show()
         }
+
+
         return view
     }
     private fun showConfirmationDialog() {
@@ -117,15 +128,15 @@ class Settings : Fragment() {
 
 
 
-    fun saveTransactionsToExcel(transactions: List<TransactionEntity>, filePath: String) {
-        val workbook = XSSFWorkbook()
+    private fun saveTransactionsToExcel(transactions: List<TransactionEntity>, fileFormat:String, outputStream: FileOutputStream) {
+
+        val workbook = if (fileFormat == "xlsx") XSSFWorkbook() else HSSFWorkbook()
+
         val sheet = workbook.createSheet("Transactions")
         val cellStyle = workbook.createCellStyle()
         cellStyle.fillForegroundColor = IndexedColors.LIGHT_YELLOW.getIndex()
         cellStyle.fillPattern = org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND
 
-
-        // Create header row
         val headerRow = sheet.createRow(0)
         headerRow.createCell(0).setCellValue("ID")
         headerRow.createCell(1).setCellValue("Title")
@@ -134,7 +145,6 @@ class Settings : Fragment() {
         headerRow.createCell(4).setCellValue("Location")
         headerRow.createCell(5).setCellValue("Timestamp")
 
-        // Create data rows
         transactions.forEachIndexed { index, transaction ->
             val row = sheet.createRow(index + 1)
             row.createCell(0).setCellValue(transaction.id?.toDouble() ?: 0.0)
@@ -144,11 +154,11 @@ class Settings : Fragment() {
             row.createCell(4).setCellValue(transaction.location)
             row.createCell(5).setCellValue(transaction.timestamp)
         }
+        // Menyimpan workbook ke file
+        workbook.write(outputStream)
+        workbook.close()
 
-        // Write the workbook to a file
-        FileOutputStream(filePath).use { outputStream ->
-            workbook.write(outputStream)
-        }
+
     }
 
 
