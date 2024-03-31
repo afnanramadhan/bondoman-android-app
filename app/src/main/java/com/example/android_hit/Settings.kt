@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
@@ -90,6 +91,7 @@ class Settings : Fragment() {
                     val fileOutputStream = FileOutputStream(file)
                     saveTransactionsToExcel(transactions, fileFormat, fileOutputStream)
                     fileOutputStream.close()
+                    Toast.makeText(requireContext(), "Transaksi berhasil disimpan", Toast.LENGTH_SHORT).show()
                 }
                 setNegativeButton("Cancel") { dialog, _ ->
                     dialog.dismiss()
