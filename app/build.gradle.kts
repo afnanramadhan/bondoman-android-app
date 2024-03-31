@@ -62,5 +62,9 @@ dependencies {
     kapt("androidx.room:room-compiler:2.5.0")
     androidTestImplementation ("androidx.room:room-testing:2.5.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+    implementation ("org.apache.poi:poi:5.2.4")
+    implementation ("org.apache.poi:poi-ooxml:5.2.4")
+
+
 
 }
