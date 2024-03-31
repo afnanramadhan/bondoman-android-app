@@ -38,6 +38,11 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.nav_transaction -> {
+//                    if(!networkManager.value!!){
+//                        setCurrentFragment(NetworkError(), HeaderNetwork())
+//                    }else{
+//                        setCurrentFragment(Transaction(), HeaderTransaction())
+//                    }
                     setCurrentFragment(Transaction(), HeaderTransaction())
                 }
                 R.id.nav_scan -> {
