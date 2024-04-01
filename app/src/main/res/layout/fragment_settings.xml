@@ -50,6 +50,15 @@
             android:text="Send Transaction List"
             android:layout_marginVertical="10dp"
             android:textColor="@color/primary1" />
+        <Button
+            android:id="@+id/randomizeTransactionButton"
+            android:layout_marginHorizontal="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_background_transparent"
+            android:text="Randomize"
+            android:layout_marginVertical="10dp"
+            android:textColor="@color/primary1" />
 
         <Button
             android:id="@+id/logoutButton"

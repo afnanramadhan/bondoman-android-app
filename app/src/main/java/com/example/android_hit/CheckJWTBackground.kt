@@ -6,7 +6,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import com.example.android_hit.utils.TokenManager
-import retrofit2.Response
 import kotlin.concurrent.thread
 
 class CheckJWTBackground:Service() {

@@ -2,6 +2,8 @@ package com.example.android_hit
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -9,34 +11,43 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.android_hit.api.RetrofitClient
+import com.example.android_hit.data.ScanResponse
+import com.example.android_hit.room.TransactionDB
+import com.example.android_hit.room.TransactionEntity
+import com.example.android_hit.utils.TokenManager
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [Scan.newInstance] factory method to
- * create an instance of this fragment.
- */
 class Scan : Fragment() {
-    // TODO: Rename and change types of parameters
     var pickedPhoto : Uri? = null
     var pickedBitMap : Bitmap? = null
     private val CAMERA_REQUEST_CODE = 1
     private lateinit var btnCapture : Button
     private lateinit var btnPick : Button
     private lateinit var ivPicture : ImageView
+    private lateinit var sharedPref : TokenManager
+
 
 
 
@@ -52,8 +63,6 @@ class Scan : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-
         return inflater.inflate(R.layout.fragment_scan, container, false)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,7 +71,7 @@ class Scan : Fragment() {
         ivPicture = view.findViewById(R.id.captureImageView)
         btnPick = view.findViewById(R.id.pickImgBtn)
         btnCapture.isEnabled = true
-
+        sharedPref = TokenManager(requireContext())
         if(ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA),
@@ -86,6 +95,13 @@ class Scan : Fragment() {
         if(requestCode == 101){
             var pic : Bitmap? = data?.getParcelableExtra<Bitmap>("data")
             ivPicture.setImageBitmap(pic)
+            pickedBitMap = pic
+            val savedImageUri = saveImageToInternalStorage(pickedBitMap!!)
+            pickedPhoto = savedImageUri
+            Handler(Looper.getMainLooper()).postDelayed({
+                showConfirmationDialog()
+            }, 700)
+
         }
         if(requestCode == 2 && resultCode == Activity.RESULT_OK && data != null){
             pickedPhoto = data.data
@@ -93,12 +109,37 @@ class Scan : Fragment() {
                 val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
                 pickedBitMap = ImageDecoder.decodeBitmap(source)
                 ivPicture.setImageBitmap(pickedBitMap)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    showConfirmationDialog()
+                }, 700)
             }else{
                 pickedBitMap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, pickedPhoto)
                 ivPicture.setImageBitmap(pickedBitMap)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    showConfirmationDialog()
+                }, 700)
+
             }
         }
 
+    }
+
+
+    private fun saveImageToInternalStorage(bitmap: Bitmap?): Uri? {
+        // Check for null
+        if (bitmap == null) {
+            return null
+        }
+
+        // Save the bitmap to a file
+        val filename = "${System.currentTimeMillis()}.jpg"
+        val file = File(requireContext().externalCacheDir, filename)
+        val fileOutputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream)
+        fileOutputStream.close()
+
+        // Get the Uri of the file
+        return Uri.fromFile(file)
     }
 
     override fun onRequestPermissionsResult(
@@ -127,24 +168,79 @@ class Scan : Fragment() {
             startActivityForResult(galleryIntext, 2)
         }
     }
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Scan.
-         */
+    private fun showConfirmationDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(this.context)
+        alertDialogBuilder.apply {
+            setTitle("Confirmation")
+            setMessage("Are you sure to use this image?")
+            setPositiveButton("Yes") { dialogInterface: DialogInterface, _: Int ->
 
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Scan().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+
+                dialogInterface.dismiss()
+
+
+                // Ubah Bitmap menjadi ByteArrayOutputStream
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                pickedBitMap?.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                // Ubah ByteArrayOutputStream menjadi byte array
+                val byteArray = byteArrayOutputStream.toByteArray()
+
+                // Ubah byte array menjadi RequestBody
+                val requestBody = byteArray.toRequestBody("image/jpg".toMediaTypeOrNull())
+
+                // Gunakan requestBody ini untuk mengirim gambar melalui Retrofit
+                val token = sharedPref.getToken()
+                val file = File(pickedPhoto?.path)
+                val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
+                val call = RetrofitClient.apiService.uploadNota("Bearer $token", filePart)
+                call.enqueue(object : Callback<ScanResponse> {
+                    override fun onResponse(call: Call<ScanResponse>, response: Response<ScanResponse>) {
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+                            Log.e("POST Success", "Response: ${responseBody.toString()}")
+                            Toast.makeText(requireContext(), "Upload Success", Toast.LENGTH_SHORT).show()
+
+                            // Get the items from the response
+                            val items = responseBody?.items?.items
+
+                            // Get a reference to the database
+                            val db = TransactionDB.getInstance(requireContext())
+                            val transactionDao = db.transactionDao
+
+                            // Loop through the items and convert them to transactions
+                            items?.forEach { item ->
+                                val amount = item.qty * item.price
+                                val transaction = TransactionEntity(
+                                    title = item.name,
+                                    amount = amount.toInt(),
+                                    category = "Expense",
+                                    location = "Location", // Replace with actual location
+                                    timestamp = System.currentTimeMillis().toString() // Replace with actual timestamp
+                                )
+
+                                // Insert the transaction into the database
+                                transactionDao.addTransaction(transaction)
+                            }
+
+                        } else {
+                            Log.e("POST Error", "Failed to make POST request: ${response.message()}")
+                            Toast.makeText(requireContext(), "Upload Failed: ${response.message()}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    override fun onFailure(call: Call<ScanResponse>, t: Throwable) {
+                        Log.e("POST Error", "Failed to make POST request: ${t.message}")
+                    }
+                })
             }
+            setNegativeButton("No") { dialogInterface: DialogInterface, _: Int ->
+                dialogInterface.dismiss()
+                ivPicture.setImageBitmap(null)
+            }
+            setCancelable(false)
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
+
 }
