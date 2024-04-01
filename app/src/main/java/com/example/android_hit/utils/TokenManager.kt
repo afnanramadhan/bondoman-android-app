@@ -56,4 +56,9 @@ class TokenManager( context: Context) {
     fun deleteToken(){
         editor.clear().apply()
     }
+
+    fun getToken(): String? {
+
+        return sharedPref.getString("TOKEN", null)
+    }
 }
