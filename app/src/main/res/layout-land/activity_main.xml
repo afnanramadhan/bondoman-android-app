@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_color_4"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
+
+        <com.google.android.material.navigationrail.NavigationRailView
+            android:id="@+id/navigation_view"
+            android:paddingTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/secondary_color_2"
+            app:itemBackground="@color/secondary_color_2"
+            app:itemIconTint="@drawable/nav_item_color_selected"
+            app:itemTextColor="@color/primary_color_1"
+            app:labelVisibilityMode="labeled"
+            app:itemPaddingBottom="36dp"
+            app:menu="@menu/side_nav_menu" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <FrameLayout
+                android:id="@+id/header_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/frame_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

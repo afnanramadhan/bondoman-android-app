@@ -27,7 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="?android:attr/windowBackground"
+        android:background="@color/secondary_color_2"
         app:itemBackground="@color/secondary_color_2"
         app:itemIconTint="@drawable/nav_item_color_selected"
         app:itemTextColor="@color/primary_color_1"

@@ -118,13 +118,12 @@
                 android:layout_marginTop="16dp"
                 android:textColor="@color/primary_color_1"/>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvTransaction"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:paddingBottom="48dp">
-                </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTransaction"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="48dp">
+            </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
     </ScrollView>
 
