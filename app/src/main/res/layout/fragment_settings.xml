@@ -33,7 +33,6 @@
 
         <Button
             android:id="@+id/saveTransactionButton"
-            android:layout_marginHorizontal="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_background_transparent"
