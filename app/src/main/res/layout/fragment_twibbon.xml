@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FragmentTwibbon">
+
+
+
+    <androidx.camera.view.PreviewView
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:id="@+id/previewView"/>
+
+    <ImageButton
+        android:layout_width="60sp"
+        android:layout_height="60sp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40sp"
+        android:id="@+id/capture"
+        android:src="@drawable/rounded_button"
+        android:scaleType="centerCrop"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:visibility="gone"
+        android:scaleType="centerCrop"
+        android:layout_centerInParent="true"/>
+
+    <ImageButton
+        android:id="@+id/retake"
+        android:layout_width="60sp"
+        android:layout_height="60sp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="41dp"
+        android:src="@drawable/iv_network_check"
+        android:visibility="gone"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:src="@drawable/twibbon"/>
+
+</RelativeLayout>

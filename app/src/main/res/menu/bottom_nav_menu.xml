@@ -6,15 +6,19 @@
         android:title="Transaction"
         />
     <item
+        android:id="@+id/nav_graphs"
+        android:icon="@drawable/graphs_icon"
+        android:title="Graphs"
+        />
+    <item
         android:id="@+id/nav_scan"
         android:icon="@drawable/scan_icon"
         android:title="Scan"
         />
     <item
-        android:id="@+id/nav_graphs"
-        android:icon="@drawable/graphs_icon"
-        android:title="Graphs"
-        />
+        android:id="@+id/nav_twibbon"
+        android:icon="@drawable/baseline_photo_camera_24"
+        android:title="Twibbon"/>
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/settings_icon"

@@ -68,6 +68,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_settings -> {
                     setCurrentFragment(Settings(), HeaderSettings())
                 }
+                R.id.nav_twibbon ->{
+                    setCurrentFragment(FragmentTwibbon(),HeaderTwibbon())
+                }
             }
             true
         }
