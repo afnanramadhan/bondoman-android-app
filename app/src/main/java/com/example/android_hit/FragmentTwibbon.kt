@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
+import android.graphics.Matrix
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -41,8 +42,8 @@ import java.util.concurrent.Executors
 class FragmentTwibbon : Fragment() {
     private var _binding: FragmentTwibbonBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var cameraProviderFuture : ListenableFuture<ProcessCameraProvider>
+    private lateinit var cameraProvider: ProcessCameraProvider
+    private lateinit var imageCapture: ImageCapture
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,80 +53,96 @@ class FragmentTwibbon : Fragment() {
         return binding.root
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this.requireContext())
-        cameraProviderFuture.addListener(Runnable {
-            val cameraProvider = cameraProviderFuture.get()
-            var preview : Preview = Preview.Builder()
-                .build()
+        setupCamera()
 
-            var cameraSelector : CameraSelector = CameraSelector.Builder()
+        binding.capture.setOnClickListener {
+            captureImage()
+        }
+
+        binding.retakeButton.setOnClickListener {
+            retakeImage()
+        }
+    }
+
+    private fun setupCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
+        cameraProviderFuture.addListener(Runnable {
+            cameraProvider = cameraProviderFuture.get()
+            val preview: Preview = Preview.Builder().build()
+
+            val cameraSelector: CameraSelector = CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
                 .build()
 
             preview.setSurfaceProvider(binding.previewView.surfaceProvider)
 
-            val imageCapture = ImageCapture.Builder()
-                .setTargetRotation(view.display.rotation)
+            imageCapture = ImageCapture.Builder()
+                .setTargetRotation(requireView().display.rotation)
                 .build()
-            cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, imageCapture,
-                preview)
 
+            cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture, preview)
+        }, ContextCompat.getMainExecutor(requireContext()))
+    }
 
-
-            binding.capture.setOnClickListener {
-                imageCapture.takePicture(ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageCapturedCallback() {
-                    override fun onCaptureSuccess(image: ImageProxy) {
-                        //    Convert ImageProxy to Bitmap
-                        val buffer = image.planes[0].buffer
-                        val bytes = ByteArray(buffer.remaining())
-                        buffer.get(bytes)
-                        val bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.size)
-                        binding.imageView.setImageBitmap(bitmap)
-                        binding.imageView.scaleType = ImageView.ScaleType.FIT_XY
-                        binding.imageView.layoutParams.width = bitmap.width
-                        binding.imageView.layoutParams.height = bitmap.height
-
-                        binding.retakeButton.visibility = View.VISIBLE
-                        binding.previewView.visibility = View.GONE
-                        binding.capture.visibility = View.GONE
-                        binding.imageView.visibility = View.VISIBLE
-
-                        Log.e("PICT","capture")
-                        image.close()
-                    }
-
-                    override fun onError(exception: ImageCaptureException) {
-                        // Handle capture error
-                        Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-                    }
-                })
+    private fun captureImage() {
+        imageCapture.takePicture(ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                val buffer = image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                val bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.size)
+                val rotatebitmap = rotateBitmap(bitmap)
+                displayCapturedImage(rotatebitmap)
+                image.close()
+                cameraProvider.unbindAll()
             }
-        binding.retakeButton.setOnClickListener {
-            // Clear the captured image and hide the retake button
-            binding.imageView.setImageBitmap(null)
-            binding.retakeButton.visibility = View.GONE
-            // Show capture button
-            binding.capture.visibility = View.VISIBLE
-            binding.previewView.visibility = View.VISIBLE
 
-            binding.imageView.visibility = View.GONE
+            override fun onError(exception: ImageCaptureException) {
+                // Handle capture error
+                Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun retakeImage() {
+        // Clear the captured image and hide the retake button
+        binding.imageView.setImageBitmap(null)
+        binding.retakeButton.visibility = View.GONE
+        // Show capture button
+        binding.capture.visibility = View.VISIBLE
+        binding.previewView.visibility = View.VISIBLE
+        binding.imageView.visibility = View.GONE
+        setupCamera()
+    }
+
+    private fun displayCapturedImage(bitmap: Bitmap?) {
+        bitmap?.let {
+            binding.imageView.setImageBitmap(it)
+            binding.imageView.scaleType = ImageView.ScaleType.FIT_XY
+            binding.imageView.layoutParams.width = it.width
+            binding.imageView.layoutParams.height = it.height
+            // Show/hide appropriate views
+            binding.retakeButton.visibility = View.VISIBLE
+            binding.previewView.visibility = View.GONE
+            binding.capture.visibility = View.GONE
+            binding.imageView.visibility = View.VISIBLE
         }
+    }
 
-        }, ContextCompat.getMainExecutor(this.requireContext()))
-
-
-
-
-
-
-
+    fun rotateBitmap(bitmap: Bitmap): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(90f)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        cameraProvider.unbindAll()
     }
 
 }

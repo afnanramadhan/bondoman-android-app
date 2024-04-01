@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.android_hit.api.RetrofitClient
 import com.example.android_hit.data.LoginPayload
@@ -75,6 +74,9 @@ class MainActivity : AppCompatActivity() {
                     R.id.nav_settings -> {
                         setCurrentFragment(Settings(), HeaderSettings())
                     }
+                    R.id.nav_twibbon -> {
+                        setCurrentFragment(FragmentTwibbon(), HeaderTwibbon())
+                    }
                 }
                 true
             }
@@ -83,6 +85,7 @@ class MainActivity : AppCompatActivity() {
                 when (item.itemId) {
                     R.id.nav_transaction -> setCurrentFragment(Transaction(), HeaderTransaction())
                     R.id.nav_scan -> setCurrentFragment(Scan(), HeaderScan())
+                    R.id.nav_twibbon -> setCurrentFragment(FragmentTwibbon(), HeaderTwibbon())
                     R.id.nav_graphs -> setCurrentFragment(Graphs(), HeaderGraphs())
                     R.id.nav_settings -> setCurrentFragment(Settings(), HeaderSettings())
                 }

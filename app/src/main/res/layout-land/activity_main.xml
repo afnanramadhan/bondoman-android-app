@@ -23,7 +23,7 @@
             app:itemIconTint="@drawable/nav_item_color_selected"
             app:itemTextColor="@color/primary_color_1"
             app:labelVisibilityMode="labeled"
-            app:itemPaddingBottom="36dp"
+            app:itemPaddingBottom="12dp"
             app:menu="@menu/side_nav_menu" />
 
 
