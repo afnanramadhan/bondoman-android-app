@@ -2,7 +2,6 @@ package com.example.android_hit
 
 //import androidx.appcompat.app.AlertDialog
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,12 +25,27 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userPref : UserManager
     private lateinit var sharedPref : TokenManager
     private lateinit var cryptoManager: CryptoManager
+
+    private lateinit var dialog : AlertDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         userPref = UserManager(this)
         sharedPref = TokenManager(this)
         cryptoManager = CryptoManager()
+
+        val networkManager = NetworkManager(this)
+        var networkDialog: AlertDialog? = null
+
+        networkManager.observe(this) { isConnected ->
+            if (!isConnected) {
+                networkDialog = showNetworkDialog()
+            } else {
+                networkDialog?.dismiss()
+                networkDialog = null
+            }
+        }
         setContentView(binding.root)
 
         setCurrentFragment(Transaction(), HeaderTransaction())
@@ -65,6 +79,20 @@ class MainActivity : AppCompatActivity() {
             showConfirmationDialog()
         }
 
+    }
+    private fun showNetworkDialog(): AlertDialog {
+        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
+        alertDialogBuilder.setTitle("No Internet Connection")
+        alertDialogBuilder.setMessage("Please check your internet connection")
+        alertDialogBuilder.setCancelable(false)
+
+        alertDialogBuilder.setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        return alertDialog
     }
 
     private fun setCurrentFragment(fragment: Fragment, header: Fragment) =

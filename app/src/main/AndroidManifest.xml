@@ -36,6 +36,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
         <activity
             android:name=".BondoManSplashScreen"
             android:exported="true"
@@ -58,5 +59,6 @@
         </provider>
 
     </application>
+
 
 </manifest>
