@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -71,37 +72,55 @@ class FragmentTwibbon : Fragment() {
                 .build()
             cameraProvider.bindToLifecycle(this as LifecycleOwner, cameraSelector, imageCapture,
                 preview)
+
+
+
+            binding.capture.setOnClickListener {
+                imageCapture.takePicture(ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageCapturedCallback() {
+                    override fun onCaptureSuccess(image: ImageProxy) {
+                        //    Convert ImageProxy to Bitmap
+                        val buffer = image.planes[0].buffer
+                        val bytes = ByteArray(buffer.remaining())
+                        buffer.get(bytes)
+                        val bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.size)
+                        binding.imageView.setImageBitmap(bitmap)
+                        binding.imageView.scaleType = ImageView.ScaleType.FIT_XY
+                        binding.imageView.layoutParams.width = bitmap.width
+                        binding.imageView.layoutParams.height = bitmap.height
+
+                        binding.retakeButton.visibility = View.VISIBLE
+                        binding.previewView.visibility = View.GONE
+                        binding.capture.visibility = View.GONE
+                        binding.imageView.visibility = View.VISIBLE
+
+                        Log.e("PICT","capture")
+                        image.close()
+                    }
+
+                    override fun onError(exception: ImageCaptureException) {
+                        // Handle capture error
+                        Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+        binding.retakeButton.setOnClickListener {
+            // Clear the captured image and hide the retake button
+            binding.imageView.setImageBitmap(null)
+            binding.retakeButton.visibility = View.GONE
+            // Show capture button
+            binding.capture.visibility = View.VISIBLE
+            binding.previewView.visibility = View.VISIBLE
+
+            binding.imageView.visibility = View.GONE
+        }
+
         }, ContextCompat.getMainExecutor(this.requireContext()))
 
 
 
 
 
-        binding.capture.setOnClickListener {
-            val imageCapture = ImageCapture.Builder()
-                .setTargetRotation(view.display?.rotation ?: Surface.ROTATION_0)
-                .build()
 
-            imageCapture.takePicture(ContextCompat.getMainExecutor(requireContext()), object : ImageCapture.OnImageCapturedCallback() {
-                @ExperimentalGetImage
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    //    Convert ImageProxy to Bitmap
-
-
-                    // Display the captured image in the ImageView
-//                    binding.imageView.setImageBitmap(bitmap)
-
-
-                    image.close()
-                    Log.e("PICT","capture")
-                }
-
-                override fun onError(exception: ImageCaptureException) {
-                    // Handle capture error
-                    Toast.makeText(requireContext(), "Capture failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
-        }
 
     }
     override fun onDestroyView() {

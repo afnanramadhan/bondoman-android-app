@@ -10,7 +10,8 @@
     <androidx.camera.view.PreviewView
         android:layout_width="match_parent"
         android:layout_height="550dp"
-        android:id="@+id/previewView"/>
+        android:id="@+id/previewView"
+        />
 
     <ImageButton
         android:layout_width="60sp"
@@ -28,12 +29,10 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="550dp"
-        android:visibility="gone"
-        android:scaleType="centerCrop"
-        android:layout_centerInParent="true"/>
+        android:visibility="gone"/>
 
     <ImageButton
-        android:id="@+id/retake"
+        android:id="@+id/retakeButton"
         android:layout_width="60sp"
         android:layout_height="60sp"
         android:layout_alignParentBottom="true"
