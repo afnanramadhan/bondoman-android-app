@@ -3,9 +3,11 @@ package com.example.android_hit
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.android_hit.api.RetrofitClient
@@ -34,22 +36,35 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setCurrentFragment(Transaction(), HeaderTransaction())
-        binding.bottomNavigation.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.nav_transaction -> {
-                    setCurrentFragment(Transaction(), HeaderTransaction())
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            binding.bottomNavigation?.setOnItemSelectedListener {
+                when (it.itemId) {
+                    R.id.nav_transaction -> {
+                        setCurrentFragment(Transaction(), HeaderTransaction())
+                    }
+                    R.id.nav_scan -> {
+                        setCurrentFragment(Scan(),  HeaderScan())
+                    }
+                    R.id.nav_graphs -> {
+                        setCurrentFragment(Graphs(), HeaderGraphs())
+                    }
+                    R.id.nav_settings -> {
+                        setCurrentFragment(Settings(), HeaderSettings())
+                    }
                 }
-                R.id.nav_scan -> {
-                    setCurrentFragment(Scan(),  HeaderScan())
-                }
-                R.id.nav_graphs -> {
-                    setCurrentFragment(Graphs(), HeaderGraphs())
-                }
-                R.id.nav_settings -> {
-                    setCurrentFragment(Settings(), HeaderSettings())
-                }
+                true
             }
-            true
+        } else {
+            binding.navigationView?.setOnItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.nav_transaction -> setCurrentFragment(Transaction(), HeaderTransaction())
+                    R.id.nav_scan -> setCurrentFragment(Scan(), HeaderScan())
+                    R.id.nav_graphs -> setCurrentFragment(Graphs(), HeaderGraphs())
+                    R.id.nav_settings -> setCurrentFragment(Settings(), HeaderSettings())
+                }
+                true
+            }
         }
 
         //Keluarin pop up kalo token dah abis, sama matiin background service

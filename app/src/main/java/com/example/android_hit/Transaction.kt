@@ -14,6 +14,8 @@ import com.example.android_hit.databinding.FragmentTransactionBinding
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.text.NumberFormat
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -97,9 +99,10 @@ class Transaction : Fragment() {
         list.addAll(database.transactionDao.getAllTransaction())
         adapter.notifyDataSetChanged()
         val totalExpenseAmount = database.transactionDao.getTotalExpense()
-        binding.amountExpense.text = totalExpenseAmount.toString()
+        val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        binding.amountExpense.text = currencyFormat.format(totalExpenseAmount)
         val totalIncomeAmount = database.transactionDao.getTotalIncome()
-        binding.amountIncome.text = totalIncomeAmount.toString()
+        binding.amountIncome.text = currencyFormat.format(totalIncomeAmount)
     }
 
     override fun onResume() {
