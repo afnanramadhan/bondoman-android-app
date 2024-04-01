@@ -1,37 +1,62 @@
 package com.example.android_hit
 
+import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.IntentSender
+import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import com.google.android.gms.location.LocationRequest
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.android_hit.databinding.FragmentDetailTransactionBinding
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
+import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class DetailTransaction : Fragment() {
+class DetailTransaction : Fragment(), LocationListener {
     private var _binding: FragmentDetailTransactionBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var database: TransactionDB
     private var category: String = ""
     private lateinit var transactionReceiver: TransactionReceiver
     private val RANDOMIZE_ACTION = "com.example.android_hit.RANDOMIZE_ACTION"
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001 // Request code for location permission
+    private lateinit var locationManager: LocationManager
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
     companion object {
         var fragmentCounter = 0
         var amountInput = ""
     }
+
+
 
     inner class TransactionReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -64,16 +89,40 @@ class DetailTransaction : Fragment() {
         val filter = IntentFilter(RANDOMIZE_ACTION)
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(transactionReceiver, filter)
 
+        locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        binding.inputLocation.setOnClickListener {
+            checkLocationPermission()
+        }
+
 
         binding.radioExpense.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 category = "Expense"
+                binding.radioExpense.setTextColor(ContextCompat.getColor(requireContext(), R.color.secondary4))
+            } else {
+                binding.radioExpense.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.primary_color_1
+                    )
+                )
             }
         }
 
         binding.radioIncome.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 category = "Income"
+                binding.radioIncome.setTextColor(ContextCompat.getColor(requireContext(), R.color.secondary5))
+            } else {
+                binding.radioIncome.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.primary_color_1
+                    )
+                )
             }
         }
 
@@ -111,7 +160,7 @@ class DetailTransaction : Fragment() {
                         val id = intent.getInt("id", 0)
 
                         val transaction = database.transactionDao.getId(id)
-                        timestamp = transaction?.timestamp
+                        timestamp = transaction.timestamp
                     }
 
                     if (intent != null) {
@@ -178,7 +227,126 @@ class DetailTransaction : Fragment() {
         }
     }
 
+    private fun checkLocationPermission() {
+        if(ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            checkGPS()
+        } else {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+        }
+    }
 
+    private fun requestManualLocation() {
+        // Show dialog or dialogSheet to input manual address
+        // Example:
+        val input = EditText(requireContext())
+        AlertDialog.Builder(requireContext())
+            .setTitle("Manual Address Input")
+            .setMessage("Enter address manually:")
+            .setView(input)
+            .setPositiveButton("OK") { dialog, _ ->
+                val manualAddress = input.text.toString()
+                if (manualAddress.isNotBlank()) {
+                    // Use manual address in transaction
+                    binding.inputLocation.setText(manualAddress)
+                } else {
+                    Toast.makeText(requireContext(), "Please enter a valid address", Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun getUserLocation() {
+
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            requestManualLocation()
+            return
+        }
+        fusedLocationProviderClient.lastLocation.addOnSuccessListener { task ->
+
+            val location = task
+
+            if (location != null) {
+                try {
+                    val geocoder = Geocoder(requireContext(), Locale.getDefault())
+
+                    val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+
+                    val address_line = address?.get(0)?.getAddressLine(0)
+
+                    binding.inputLocation.setText(address_line)
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                }
+            }
+        }
+
+    }
+
+    private fun checkGPS() {
+        locationRequest = LocationRequest.create()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = 10000
+        locationRequest.fastestInterval = 5000
+
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+
+        builder.setAlwaysShow(true)
+
+        var result = LocationServices.getSettingsClient(requireContext().applicationContext).checkLocationSettings(builder.build())
+
+        result.addOnCompleteListener { task ->
+            try {
+                var response = task.getResult(
+                    ApiException::class.java
+                )
+
+                getUserLocation()
+
+            } catch (ex: ApiException) {
+                when (ex.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                        try {
+                            var resolvableApiException = ex as ResolvableApiException
+                            resolvableApiException.startResolutionForResult(
+                                this@DetailTransaction.requireActivity(),
+                                200
+                            )
+                        } catch (ex: IntentSender.SendIntentException) {
+                        }
+                    }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                        Unit
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -188,5 +356,9 @@ class DetailTransaction : Fragment() {
             LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(transactionReceiver)
         }
 
+    }
+
+    override fun onLocationChanged(location: Location) {
+        TODO("Not yet implemented")
     }
 }
