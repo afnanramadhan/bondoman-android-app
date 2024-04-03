@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login"
-        android:background="@color/primary1"
+        android:backgroundTint="@color/primary_color_1"
         android:textColor="@color/white"
 
         app:layout_constraintBottom_toBottomOf="parent"
