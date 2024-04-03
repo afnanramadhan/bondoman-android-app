@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -38,6 +39,9 @@ import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class Scan : Fragment() {
     var pickedPhoto : Uri? = null
@@ -80,7 +84,7 @@ class Scan : Fragment() {
             btnCapture.isEnabled = true
         }
         btnPick.setOnClickListener {
-            pickedPhoto()
+            openGallery()
         }
 
 
@@ -103,28 +107,85 @@ class Scan : Fragment() {
             }, 700)
 
         }
+//        if(requestCode == 2 && resultCode == Activity.RESULT_OK && data != null){
+//            pickedPhoto = data.data
+//            if(Build.VERSION.SDK_INT>=20){
+//                val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
+//                pickedBitMap = ImageDecoder.decodeBitmap(source)
+//                ivPicture.setImageBitmap(pickedBitMap)
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    showConfirmationDialog()
+//                }, 700)
+//            }else{
+//                pickedBitMap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, pickedPhoto)
+//                ivPicture.setImageBitmap(pickedBitMap)
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    showConfirmationDialog()
+//                }, 700)
+//
+//            }
+//        }
+
         if(requestCode == 2 && resultCode == Activity.RESULT_OK && data != null){
             pickedPhoto = data.data
-            if(Build.VERSION.SDK_INT>=20){
-                val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
-                pickedBitMap = ImageDecoder.decodeBitmap(source)
-                ivPicture.setImageBitmap(pickedBitMap)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    showConfirmationDialog()
-                }, 700)
-            }else{
-                pickedBitMap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, pickedPhoto)
-                ivPicture.setImageBitmap(pickedBitMap)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    showConfirmationDialog()
-                }, 700)
-
+            if (pickedPhoto == null) {
+                Toast.makeText(requireContext(), "Error getting selected file", Toast.LENGTH_SHORT).show()
+                return
             }
+
+            // Load the image and display it in the ImageView
+            val bitmap = try {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    val source = ImageDecoder.createSource(requireContext().contentResolver, pickedPhoto!!)
+                    ImageDecoder.decodeBitmap(source)
+                } else {
+                    MediaStore.Images.Media.getBitmap(requireContext().contentResolver, pickedPhoto!!)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error getting selected file: ${e.message}", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            ivPicture.setImageBitmap(bitmap)
+            pickedBitMap = bitmap
+            Handler(Looper.getMainLooper()).postDelayed({
+                showConfirmationDialog()
+            }, 700)
         }
 
     }
 
+    private fun openGallery() {
 
+        val photoPickerIntent = Intent(Intent.ACTION_PICK)
+        photoPickerIntent.type = "image/*"
+        startActivityForResult(photoPickerIntent, 2)
+    }
+    private val galleryLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val selectedImageUri: Uri? = result.data?.data
+                // Do something with the selected image URI
+                // For example, display it in an ImageView
+                loadSelectedImage(selectedImageUri)
+            }
+        }
+    private fun loadSelectedImage(imageUri: Uri?) {
+        // Check for null
+        if (imageUri == null) {
+            return
+        }
+
+        // Load the image and display it in the ImageView
+        val bitmap = if (Build.VERSION.SDK_INT >= 28) {
+            val source = ImageDecoder.createSource(requireContext().contentResolver, imageUri)
+            ImageDecoder.decodeBitmap(source)
+        } else {
+            MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
+        }
+
+        ivPicture.setImageBitmap(bitmap)
+    }
     private fun saveImageToInternalStorage(bitmap: Bitmap?): Uri? {
         // Check for null
         if (bitmap == null) {
@@ -178,17 +239,12 @@ class Scan : Fragment() {
 
                 dialogInterface.dismiss()
 
-
-                // Ubah Bitmap menjadi ByteArrayOutputStream
                 val byteArrayOutputStream = ByteArrayOutputStream()
                 pickedBitMap?.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-                // Ubah ByteArrayOutputStream menjadi byte array
                 val byteArray = byteArrayOutputStream.toByteArray()
 
-                // Ubah byte array menjadi RequestBody
                 val requestBody = byteArray.toRequestBody("image/jpg".toMediaTypeOrNull())
 
-                // Gunakan requestBody ini untuk mengirim gambar melalui Retrofit
                 val token = sharedPref.getToken()
                 val file = File(pickedPhoto?.path)
                 val filePart = MultipartBody.Part.createFormData("file", file.name, requestBody)
@@ -200,22 +256,22 @@ class Scan : Fragment() {
                             Log.e("POST Success", "Response: ${responseBody.toString()}")
                             Toast.makeText(requireContext(), "Upload Success", Toast.LENGTH_SHORT).show()
 
-                            // Get the items from the response
                             val items = responseBody?.items?.items
 
-                            // Get a reference to the database
                             val db = TransactionDB.getInstance(requireContext())
                             val transactionDao = db.transactionDao
 
-                            // Loop through the items and convert them to transactions
                             items?.forEach { item ->
                                 val amount = item.qty * item.price
+                                val timestamp = System.currentTimeMillis()
+                                val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.getDefault())
+                                val currentDateAndTime: String = sdf.format(Date(timestamp))
                                 val transaction = TransactionEntity(
                                     title = item.name,
                                     amount = amount.toInt(),
                                     category = "Expense",
-                                    location = "Location", // Replace with actual location
-                                    timestamp = System.currentTimeMillis().toString() // Replace with actual timestamp
+                                    location = "Location",
+                                    timestamp = currentDateAndTime
                                 )
 
                                 // Insert the transaction into the database
