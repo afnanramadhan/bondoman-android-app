@@ -81,7 +81,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="24dp"
                     android:text="Income"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    android:textColor="@color/primary_color_1"/>
 
                 <RadioButton
                     android:id="@+id/radioExpense"
@@ -89,7 +90,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="24dp"
                     android:text="Expense"
-                    android:textSize="24sp" />
+                    android:textSize="24sp"
+                    android:textColor="@color/primary_color_1"/>
             </RadioGroup>
 
             <TextView

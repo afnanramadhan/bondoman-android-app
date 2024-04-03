@@ -11,5 +11,6 @@ class TransactionEntity (
     @ColumnInfo(name = "amount") val amount : Int,
     @ColumnInfo(name = "category") val category : String,
     @ColumnInfo(name = "location") val location : String,
+    @ColumnInfo(name = "coordinate") val coordinate: String,
     @ColumnInfo(name = "timestamp") val timestamp: String
 )

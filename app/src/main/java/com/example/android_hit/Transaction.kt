@@ -52,11 +52,14 @@ class Transaction : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView = binding.rvTransaction
+
         fab = binding.fabAdd
+
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.addItemDecoration(
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
+
         adapter = TransactionAdapter(list)
         recyclerView.adapter = adapter
         fab.setOnClickListener {
@@ -68,15 +71,13 @@ class Transaction : Fragment() {
                 deleteTransaction(position)
             }
         })
+
         database = TransactionDB.getInstance(requireContext())
         getData()
-        val totalExpenseAmount = database.transactionDao.getTotalExpense()
-        binding.amountExpense.text = totalExpenseAmount.toString()
     }
 
     private fun deleteTransaction(position: Int) {
         val deletedItem = list[position]
-        // Kurangi total expense amount jika transaksi yang dihapus memiliki kategori expense
         if (deletedItem.category == "Expense") {
             val expenseAmount = deletedItem.amount
             val currentTotalExpense = database.transactionDao.getTotalExpense()
@@ -88,21 +89,25 @@ class Transaction : Fragment() {
             val newTotalIncome = currentTotalIncome - incomeAmount
             binding.amountIncome.text = newTotalIncome.toString()
         }
-        // Hapus transaksi dari database dan daftar transaksi
         database.transactionDao.deleteTransaction(deletedItem)
         list.removeAt(position)
         adapter.notifyItemRemoved(position)
+        getIncomeExpense()
+    }
+
+    private fun getIncomeExpense() {
+        val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        val totalExpenseAmount = database.transactionDao.getTotalExpense()
+        val totalIncomeAmount = database.transactionDao.getTotalIncome()
+        binding.amountExpense.text = currencyFormat.format(totalExpenseAmount)
+        binding.amountIncome.text = currencyFormat.format(totalIncomeAmount)
     }
 
     private fun getData() {
         list.clear()
         list.addAll(database.transactionDao.getAllTransaction())
         adapter.notifyDataSetChanged()
-        val totalExpenseAmount = database.transactionDao.getTotalExpense()
-        val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-        binding.amountExpense.text = currencyFormat.format(totalExpenseAmount)
-        val totalIncomeAmount = database.transactionDao.getTotalIncome()
-        binding.amountIncome.text = currencyFormat.format(totalIncomeAmount)
+        getIncomeExpense()
     }
 
     override fun onResume() {

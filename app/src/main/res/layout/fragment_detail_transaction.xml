@@ -53,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
                 android:padding="8dp"
-                android:textSize="36sp" />
+                android:textSize="36sp"
+                android:gravity="end"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -77,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="24dp"
                 android:text="Income"
-                android:textSize="24sp" />
+                android:textSize="24sp"/>
 
             <RadioButton
                 android:id="@+id/radioExpense"
@@ -85,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:text="Expense"
-                android:textSize="24sp" />
+                android:textSize="24sp"/>
         </RadioGroup>
 
         <TextView
