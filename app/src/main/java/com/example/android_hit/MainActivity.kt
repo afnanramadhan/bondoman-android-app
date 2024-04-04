@@ -3,11 +3,10 @@ package com.example.android_hit
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.android_hit.api.RetrofitClient
 import com.example.android_hit.data.LoginPayload
@@ -101,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    private fun showNetworkDialog(): AlertDialog {
+    fun showNetworkDialog(): AlertDialog {
         val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
         alertDialogBuilder.setTitle("No Internet Connection")
         alertDialogBuilder.setMessage("Please check your internet connection")

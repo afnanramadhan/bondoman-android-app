@@ -1,10 +1,11 @@
 package com.example.android_hit
 
+import android.app.AlertDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.example.android_hit.utils.TokenManager
 
@@ -44,5 +45,20 @@ class LoginActivity : AppCompatActivity() {
     private fun goToHome(){
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+    }
+
+    fun showNetworkDialog(): AlertDialog {
+        val alertDialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
+        alertDialogBuilder.setTitle("No Internet Connection")
+        alertDialogBuilder.setMessage("Please check your internet connection")
+        alertDialogBuilder.setCancelable(false)
+
+        alertDialogBuilder.setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        return alertDialog
     }
 }

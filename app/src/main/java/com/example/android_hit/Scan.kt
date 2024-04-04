@@ -3,11 +3,13 @@ package com.example.android_hit
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -103,7 +105,10 @@ class Scan : Fragment() {
             val savedImageUri = saveImageToInternalStorage(pickedBitMap!!)
             pickedPhoto = savedImageUri
             Handler(Looper.getMainLooper()).postDelayed({
-                showConfirmationDialog()
+                if(isNetworkAvailable(requireContext())){
+                    showConfirmationDialog()
+                }
+
             }, 700)
 
         }
@@ -149,7 +154,10 @@ class Scan : Fragment() {
             ivPicture.setImageBitmap(bitmap)
             pickedBitMap = bitmap
             Handler(Looper.getMainLooper()).postDelayed({
-                showConfirmationDialog()
+                if(isNetworkAvailable(requireContext())){
+                    showConfirmationDialog()
+                    }
+
             }, 700)
         }
 
@@ -300,6 +308,12 @@ class Scan : Fragment() {
 
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
+    }
+
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
 }

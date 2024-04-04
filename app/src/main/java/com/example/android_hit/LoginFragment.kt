@@ -3,15 +3,16 @@ package com.example.android_hit
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.android_hit.api.RetrofitClient
 import com.example.android_hit.data.LoginPayload
 import com.example.android_hit.data.LoginResponse
@@ -57,15 +58,20 @@ class LoginFragment : Fragment() {
             goToHome()
         }
 
-        loginButton.setOnClickListener {
-            val emailValue = emailInput.text.toString()
-            val passwordValue = passwordInput.text.toString()
-            val passEncrypt = cryptoManager.encrypt(passwordValue)
-            userPref.putEmail("EMAIL", emailValue)
-            userPref.putPassword("PASS", passEncrypt)
-            val data = LoginPayload(emailValue,passwordValue)
-            login(data)
 
+        loginButton.setOnClickListener {
+            val context = context
+            if (context != null && isNetworkAvailable(context)) {
+                val emailValue = emailInput.text.toString()
+                val passwordValue = passwordInput.text.toString()
+                val passEncrypt = cryptoManager.encrypt(passwordValue)
+                userPref.putEmail("EMAIL", emailValue)
+                userPref.putPassword("PASS", passEncrypt)
+                val data = LoginPayload(emailValue,passwordValue)
+                login(data)
+            } else {
+                (activity as? LoginActivity)?.showNetworkDialog()
+            }
         }
     }
 
@@ -130,6 +136,11 @@ class LoginFragment : Fragment() {
                 // This method is called when the HTTP call fails
             }
         })
+    }
+    fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
 
