@@ -1,49 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FragmentTwibbon">
 
 
-
-    <androidx.camera.view.PreviewView
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="550dp"
-        android:id="@+id/previewView"
-        />
+        android:layout_height="500dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.camera.view.PreviewView
+            android:id="@+id/previewView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/twibbon" />
+    </FrameLayout>
 
     <ImageButton
+        android:id="@+id/capture"
         android:layout_width="60sp"
         android:layout_height="60sp"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="40sp"
-        android:id="@+id/capture"
-        android:src="@drawable/rounded_button"
+        android:layout_centerHorizontal="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:scaleType="centerCrop"
-        android:background="?attr/selectableItemBackgroundBorderless" />
+        android:src="@drawable/rounded_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout" />
 
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="550dp"
-        android:visibility="gone"/>
 
     <ImageButton
         android:id="@+id/retakeButton"
         android:layout_width="60sp"
         android:layout_height="60sp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="41dp"
-        android:src="@drawable/iv_network_check"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/baseline_refresh_24"
         android:visibility="gone"
-        android:background="?attr/selectableItemBackgroundBorderless" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/capture"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="550dp"
-        android:src="@drawable/twibbon"/>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

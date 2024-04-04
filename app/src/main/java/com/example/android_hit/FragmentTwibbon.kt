@@ -121,17 +121,14 @@ class FragmentTwibbon : Fragment() {
     }
 
     private fun displayCapturedImage(bitmap: Bitmap?) {
-        bitmap?.let {
-            binding.imageView.setImageBitmap(it)
-            binding.imageView.scaleType = ImageView.ScaleType.FIT_XY
-            binding.imageView.layoutParams.width = it.width
-            binding.imageView.layoutParams.height = it.height
-            // Show/hide appropriate views
-            binding.retakeButton.visibility = View.VISIBLE
-            binding.previewView.visibility = View.GONE
-            binding.capture.visibility = View.GONE
-            binding.imageView.visibility = View.VISIBLE
-        }
+        binding.imageView.setImageBitmap(bitmap)
+        binding.imageView.scaleType = ImageView.ScaleType.CENTER_CROP
+
+        // Show/hide appropriate views
+        binding.retakeButton.visibility = View.VISIBLE
+        binding.previewView.visibility = View.GONE
+        binding.capture.visibility = View.GONE
+        binding.imageView.visibility = View.VISIBLE
     }
 
     fun rotateBitmap(bitmap: Bitmap): Bitmap {
