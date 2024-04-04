@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
@@ -95,9 +96,14 @@ class FragmentTwibbon : Fragment() {
                 val buffer = image.planes[0].buffer
                 val bytes = ByteArray(buffer.remaining())
                 buffer.get(bytes)
-                val bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.size)
-                val rotatebitmap = rotateBitmap(bitmap)
-                displayCapturedImage(rotatebitmap)
+                var bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.size)
+                val orientation = resources.configuration.orientation
+                if(orientation == Configuration.ORIENTATION_PORTRAIT){
+                    bitmap = rotateBitmap90(bitmap)
+                }else{
+                    bitmap = rotateBitmap180(bitmap)
+                }
+                displayCapturedImage(bitmap)
                 image.close()
                 cameraProvider.unbindAll()
             }
@@ -131,9 +137,14 @@ class FragmentTwibbon : Fragment() {
         binding.imageView.visibility = View.VISIBLE
     }
 
-    fun rotateBitmap(bitmap: Bitmap): Bitmap {
+    fun rotateBitmap90(bitmap: Bitmap): Bitmap {
         val matrix = Matrix()
         matrix.postRotate(90f)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+    fun rotateBitmap180(bitmap: Bitmap): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(180f)
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
     override fun onDestroyView() {
