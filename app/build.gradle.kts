@@ -66,4 +66,5 @@ dependencies {
     implementation ("org.apache.poi:poi-ooxml:5.2.4")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation ("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation ("com.google.android.gms:play-services-location:18.0.0")
 }

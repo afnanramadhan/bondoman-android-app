@@ -215,6 +215,7 @@ class Scan : Fragment() {
                                     amount = amount.toInt(),
                                     category = "Expense",
                                     location = "Location", // Replace with actual location
+                                    coordinate = "0,0", // Replace with actual coordinate
                                     timestamp = System.currentTimeMillis().toString() // Replace with actual timestamp
                                 )
 
