@@ -4,11 +4,15 @@ import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android_hit.DetailTransactionActivity
+import com.example.android_hit.R
 import com.example.android_hit.databinding.RowTransactionBinding
 import com.example.android_hit.room.TransactionEntity
+import java.text.NumberFormat
+import java.util.Locale
 
 class TransactionAdapter(private val list: MutableList<TransactionEntity>) : RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder>() {
 
@@ -16,14 +20,17 @@ class TransactionAdapter(private val list: MutableList<TransactionEntity>) : Rec
         fun bind(transaction: TransactionEntity) {
             binding.apply {
                 title.text = transaction.title
-                amount.text = transaction.amount.toString()
+                val currencyFormat = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+                amount.text = currencyFormat.format(transaction.amount)
                 category.text = transaction.category
                 location.text = transaction.location
                 date.text = transaction.timestamp
 
+                val colorId = if (transaction.category == "Expense") R.color.secondary4 else R.color.secondary5
+                category.setTextColor(ContextCompat.getColor(binding.root.context, colorId))
+
                 deleteButton.setOnClickListener {
-                    val position = adapterPosition
-                    onDeleteClickListener?.onDeleteClick(position)
+                    onDeleteClickListener?.onDeleteClick(adapterPosition)
                 }
 
                 editButton.setOnClickListener {
@@ -33,7 +40,11 @@ class TransactionAdapter(private val list: MutableList<TransactionEntity>) : Rec
                 }
 
                 location.setOnClickListener {
-                    val locationUri = "geo:0,0?q=${transaction.location}"
+                    val locationUri = if (transaction.coordinate != "-6.927314530264154, 107.77007155415649") {
+                        "geo:0,0?q=${transaction.location}"
+                    } else {
+                        "geo:0,0?q=${transaction.coordinate}"
+                    }
                     val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(locationUri))
                     mapIntent.setPackage("com.google.android.apps.maps")
                     startActivity(binding.root.context, mapIntent, null)
