@@ -28,17 +28,12 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class Transaction : Fragment() {
-    // TODO: Rename and change types of parameters
     private lateinit var binding: FragmentTransactionBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: TransactionAdapter
     private lateinit var database: TransactionDB
     private lateinit var fab: FloatingActionButton
     private var list = mutableListOf<TransactionEntity>()
-
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

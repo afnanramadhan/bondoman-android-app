@@ -39,6 +39,7 @@ import java.util.Locale
 class DetailTransaction : Fragment(), LocationListener {
     private var _binding: FragmentDetailTransactionBinding? = null
     private val binding get() = _binding!!
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var database: TransactionDB
     private var category: String = ""
     private var coordinate: String = "-6.927314530264154, 107.77007155415649"
@@ -47,14 +48,12 @@ class DetailTransaction : Fragment(), LocationListener {
     private val RANDOMIZE_ACTION = "com.example.android_hit.RANDOMIZE_ACTION"
     private lateinit var locationManager: LocationManager
     private lateinit var locationRequest: LocationRequest
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
 
     companion object {
         var fragmentCounter = 0
         var amountInput = ""
     }
-
-
 
     inner class TransactionReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -245,7 +244,6 @@ class DetailTransaction : Fragment(), LocationListener {
     }
 
     private fun getUserLocation() {
-
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -271,12 +269,12 @@ class DetailTransaction : Fragment(), LocationListener {
                 try {
                     val geocoder = Geocoder(requireContext(), Locale.getDefault())
                     val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-                    val address_line = address?.get(0)?.getAddressLine(0)
+                    val addressLine = address?.get(0)?.getAddressLine(0)
 
                     coordinate = "${location.latitude},${location.longitude}"
-                    binding.inputLocation.setText(address_line)
+                    binding.inputLocation.setText(addressLine)
 
-                    Log.d("Location", "Address: $address_line")
+                    Log.d("Location", "Address: $addressLine")
                     Log.d("Location", "Coordinate: $coordinate")
 
                 } catch (e: Exception) {
@@ -295,29 +293,24 @@ class DetailTransaction : Fragment(), LocationListener {
         locationRequest.fastestInterval = 5000
 
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-
         builder.setAlwaysShow(true)
-
-        var result = LocationServices.getSettingsClient(requireContext().applicationContext).checkLocationSettings(builder.build())
-
+        val result = LocationServices.getSettingsClient(requireContext().applicationContext).checkLocationSettings(builder.build())
         result.addOnCompleteListener { task ->
             try {
                 var response = task.getResult(
                     ApiException::class.java
                 )
-
                 getUserLocation()
-
             } catch (ex: ApiException) {
                 when (ex.statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
                         try {
-                            var resolvableApiException = ex as ResolvableApiException
+                            val resolvableApiException = ex as ResolvableApiException
                             resolvableApiException.startResolutionForResult(
                                 this@DetailTransaction.requireActivity(),
                                 200
                             )
-                        } catch (ex: IntentSender.SendIntentException) {
+                        } catch (_: IntentSender.SendIntentException) {
                         }
                     }
                     LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
@@ -327,7 +320,6 @@ class DetailTransaction : Fragment(), LocationListener {
                 }
             }
         }
-
     }
 
     override fun onDestroyView() {
@@ -337,7 +329,6 @@ class DetailTransaction : Fragment(), LocationListener {
         if(fragmentCounter>1){
             LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(transactionReceiver)
         }
-
     }
 
     override fun onLocationChanged(location: Location) {

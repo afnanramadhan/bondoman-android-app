@@ -1,9 +1,7 @@
 package com.example.android_hit.adapter
 
 import android.content.Intent
-import android.location.Geocoder
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -28,15 +26,11 @@ class TransactionAdapter(private val list: MutableList<TransactionEntity>) : Rec
                 location.text = transaction.location
                 date.text = transaction.timestamp
 
-                if (transaction.category == "Expense") {
-                    category.setTextColor(ContextCompat.getColor(itemView.context, R.color.secondary4))
-                } else {
-                    category.setTextColor(ContextCompat.getColor(itemView.context, R.color.secondary5))
-                }
+                val colorId = if (transaction.category == "Expense") R.color.secondary4 else R.color.secondary5
+                category.setTextColor(ContextCompat.getColor(binding.root.context, colorId))
 
                 deleteButton.setOnClickListener {
-                    val position = adapterPosition
-                    onDeleteClickListener?.onDeleteClick(position)
+                    onDeleteClickListener?.onDeleteClick(adapterPosition)
                 }
 
                 editButton.setOnClickListener {
@@ -46,18 +40,14 @@ class TransactionAdapter(private val list: MutableList<TransactionEntity>) : Rec
                 }
 
                 location.setOnClickListener {
-                    Log.d("Masuk klik Location", transaction.location)
-                    if (transaction.coordinate != "-6.927314530264154, 107.77007155415649") {
-                        val locationUri = "geo:0,0?q=${transaction.location}"
-                        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(locationUri))
-                        mapIntent.setPackage("com.google.android.apps.maps")
-                        startActivity(binding.root.context, mapIntent, null)
+                    val locationUri = if (transaction.coordinate != "-6.927314530264154, 107.77007155415649") {
+                        "geo:0,0?q=${transaction.location}"
                     } else {
-                        val locationUri = "geo:0,0?q=${transaction.coordinate}"
-                        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(locationUri))
-                        mapIntent.setPackage("com.google.android.apps.maps")
-                        startActivity(binding.root.context, mapIntent, null)
+                        "geo:0,0?q=${transaction.coordinate}"
                     }
+                    val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(locationUri))
+                    mapIntent.setPackage("com.google.android.apps.maps")
+                    startActivity(binding.root.context, mapIntent, null)
                 }
             }
         }
