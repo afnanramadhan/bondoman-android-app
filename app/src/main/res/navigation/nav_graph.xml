@@ -7,12 +7,12 @@
 
     <activity
         android:id="@+id/loginActivity2"
-        android:name="com.example.android_hit.LoginActivity"
+        android:name="com.example.android_hit.ui.login.LoginActivity"
         android:label="activity_login"
         tools:layout="@layout/activity_login" />
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.android_hit.LoginFragment"
+        android:name="com.example.android_hit.ui.login.LoginFragment"
         android:label="fragment_login"
         tools:layout="@layout/fragment_login" />
 </navigation>

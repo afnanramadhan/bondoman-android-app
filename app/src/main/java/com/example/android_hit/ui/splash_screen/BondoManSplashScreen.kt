@@ -1,8 +1,10 @@
-package com.example.android_hit
+package com.example.android_hit.ui.splash_screen
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.android_hit.ui.login.LoginActivity
+import com.example.android_hit.R
 import java.util.Timer
 import java.util.TimerTask
 

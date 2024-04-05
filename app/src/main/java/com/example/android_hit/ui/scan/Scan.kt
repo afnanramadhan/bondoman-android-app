@@ -1,4 +1,4 @@
-package com.example.android_hit
+package com.example.android_hit.ui.scan
 
 import android.Manifest
 import android.app.Activity
@@ -27,6 +27,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.example.android_hit.R
 import com.example.android_hit.api.RetrofitClient
 import com.example.android_hit.data.ScanResponse
 import com.example.android_hit.room.TransactionDB
