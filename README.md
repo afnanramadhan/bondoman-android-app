@@ -57,6 +57,7 @@ Berikut adalah library yang digunakan dalam proyek ini:
 ![img/addedittsx.png](img/addedittsx.png)
 - Graph
 ![img/graph.png](img/graph.png)
+![img/landscape.png](img/landscape.png)
 - Scan Nota
 ![img/scan.png](img/scan.png)
 - Settings
