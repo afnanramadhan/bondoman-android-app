@@ -70,3 +70,10 @@ Berikut adalah library yang digunakan dalam proyek ini:
 ![img/randomize.png](img/randomize.png)
 - [BONUS] Twibbon
 ![img/twibbon.png](img/twibbon.png)
+
+## Kontributor dan Distribusi Beban Kerja 
+| Nama                    | NIM | Fungsionalitas | Durasi Kerja |
+|--------------------------|------------|---------------|-------|
+| Afnan Edsa Ramadhan | 13521010  | <ul> <li> Login </li> <li> Logout</li> <li> Broadcast Receiver </li><li> Background service </li> <li> Graph </li><li> Twibbon </li> </ul>              | 40 jam|
+| M Syauqi Jannatan          | 13521014  | <ul>  <li> Scan Nota </li> <li> Saving Trx into XLS/XLSX </li> <li> Intent Gmail </li> <li> Network Sensing </li> </ul>             | 40 jam |
+|    Jauza Lathifah Annassalafi     | 13521030  | <ul> <li> Header and Navbar </li> <li> CRUD transaction </li> </li><li> Intent to Gmaps </li> <li> UI & Animation </li> </ul>            | 40 jam|
