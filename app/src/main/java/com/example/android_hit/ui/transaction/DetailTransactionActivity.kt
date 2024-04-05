@@ -1,8 +1,9 @@
-package com.example.android_hit
+package com.example.android_hit.ui.transaction
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.example.android_hit.R
 import com.example.android_hit.databinding.ActivityDetailTransactionBinding
 
 class DetailTransactionActivity : AppCompatActivity() {

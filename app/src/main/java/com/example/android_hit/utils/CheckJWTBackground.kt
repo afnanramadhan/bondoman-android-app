@@ -1,11 +1,11 @@
-package com.example.android_hit
+package com.example.android_hit.utils
 
 import android.app.Service
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
-import com.example.android_hit.utils.TokenManager
+import com.example.android_hit.MainActivity
 import kotlin.concurrent.thread
 
 class CheckJWTBackground:Service() {

@@ -1,4 +1,4 @@
-package com.example.android_hit
+package com.example.android_hit.ui.transaction
 
 import android.Manifest
 import android.app.Activity
@@ -23,6 +23,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.android_hit.MainActivity
+import com.example.android_hit.R
 import com.example.android_hit.databinding.FragmentDetailTransactionBinding
 import com.example.android_hit.room.TransactionDB
 import com.example.android_hit.room.TransactionEntity
@@ -97,7 +99,9 @@ class DetailTransaction : Fragment(), LocationListener {
         binding.radioExpense.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 category = "Expense"
-                binding.radioExpense.setTextColor(ContextCompat.getColor(requireContext(), R.color.secondary4))
+                binding.radioExpense.setTextColor(ContextCompat.getColor(requireContext(),
+                    R.color.secondary4
+                ))
             } else {
                 binding.radioExpense.setTextColor(
                     ContextCompat.getColor(
@@ -111,7 +115,9 @@ class DetailTransaction : Fragment(), LocationListener {
         binding.radioIncome.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 category = "Income"
-                binding.radioIncome.setTextColor(ContextCompat.getColor(requireContext(), R.color.secondary5))
+                binding.radioIncome.setTextColor(ContextCompat.getColor(requireContext(),
+                    R.color.secondary5
+                ))
             } else {
                 binding.radioIncome.setTextColor(
                     ContextCompat.getColor(
@@ -122,7 +128,7 @@ class DetailTransaction : Fragment(), LocationListener {
             }
         }
 
-        if(amountInput!=""){
+        if(amountInput !=""){
             binding.inputAmount.setText(amountInput)
         }
         val intent = requireActivity().intent.extras
@@ -325,8 +331,8 @@ class DetailTransaction : Fragment(), LocationListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        amountInput=""
-        if(fragmentCounter>1){
+        amountInput =""
+        if(fragmentCounter >1){
             LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(transactionReceiver)
         }
     }

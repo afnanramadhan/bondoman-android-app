@@ -1,4 +1,4 @@
-package com.example.android_hit
+package com.example.android_hit.ui.twibbon
 
 import android.annotation.SuppressLint
 import android.app.Activity

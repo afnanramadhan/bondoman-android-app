@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_color_4"
-    tools:context=".DetailTransactionActivity">
+    tools:context=".ui.transaction.DetailTransactionActivity">
 
     <FrameLayout
         android:id="@+id/header_layout"

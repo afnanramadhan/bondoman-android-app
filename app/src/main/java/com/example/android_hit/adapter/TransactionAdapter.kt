@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.android_hit.DetailTransactionActivity
+import com.example.android_hit.ui.transaction.DetailTransactionActivity
 import com.example.android_hit.R
 import com.example.android_hit.databinding.RowTransactionBinding
 import com.example.android_hit.room.TransactionEntity

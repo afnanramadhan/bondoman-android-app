@@ -1,4 +1,4 @@
-package com.example.android_hit
+package com.example.android_hit.ui.graph
 
 
 import java.text.NumberFormat
@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.android_hit.R
 import com.example.android_hit.adapter.TransactionAdapter
 import com.example.android_hit.databinding.FragmentGraphsBinding
 import com.example.android_hit.room.TransactionDB
@@ -20,7 +21,6 @@ import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.formatter.PercentFormatter
 
 
 class Graphs : Fragment() {

@@ -31,17 +31,17 @@
         android:theme="@style/Theme.AndroidHIT"
         tools:targetApi="31">
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".DetailTransactionActivity"
+            android:name=".ui.transaction.DetailTransactionActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />
 
         <activity
-            android:name=".BondoManSplashScreen"
+            android:name=".ui.splash_screen.BondoManSplashScreen"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
@@ -50,7 +50,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".CheckJWTBackground"/>
+        <service android:name=".utils.CheckJWTBackground"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.android_hit.fileprovider"
